@@ -153,8 +153,8 @@
                 });
             };
             
-            if (IsLocalHost() || syncInit)
-                StartUnityInstance_IfUnloaded();
+            // Start Unity immediately; do not make gameplay wait for Yandex SDK initialization.
+            StartUnityInstance_IfUnloaded();
             
             if ('onblur' in document){
                 if (!window.blurFocusHandlersInstalled){
