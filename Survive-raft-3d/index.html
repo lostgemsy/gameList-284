@@ -166,14 +166,13 @@
                 offset += part.byteLength;
             }
 
-            const brotli = await import("https://cdn.jsdelivr.net/npm/brotli-wasm@3.0.1/+esm");
-            if (typeof brotli.default === "function") await brotli.default();
-            const decompress = brotli.decompress || (brotli.default && brotli.default.decompress);
-            if (typeof decompress !== "function") {
+            const brotliModule = await import("https://cdn.jsdelivr.net/npm/brotli-wasm@3.0.1/index.web.js");
+            const brotli = await brotliModule.default;
+            if (!brotli || typeof brotli.decompress !== "function") {
                 throw new Error("Brotli decoder did not expose decompress().");
             }
 
-            const uncompressed = decompress(compressed);
+            const uncompressed = brotli.decompress(compressed);
             const blobUrl = URL.createObjectURL(new Blob([uncompressed], { type: mimeType }));
             unityAssetUrls.push(blobUrl);
             return blobUrl;
