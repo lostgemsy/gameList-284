@@ -1,287 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#08090d">
-  <meta name="description" content="Bear Haven browser game">
-  <title>Bear Haven</title>
+<html style="overflow: hidden;"><head>
+              <title>Bear Haven</title>
+              <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+              <meta id="gameViewport" name="viewport" content="width=device-width initial-scale=1">
+              <link href="styles.css" rel="stylesheet" type="text/css">
+<script src="https://sdk.crazygames.com/crazygames-sdk-v1.js"></script><style>
+.crazy-banner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
+    <script>
+      var sdk;
+	  var ylang="en";
+    //  var unityI = null;
+ const crazysdk = window.CrazyGames.CrazySDK.getInstance(); // getting the SDK
+	 sdk=crazysdk;
+crazysdk.init();
+	  
+	  
+	    function iadStarted(){
+  window.adw("mute");
+     console.log('I ad open.');
+  };
 
-  <!-- Primary CDN. All relative GWT files resolve from this repository folder. -->
-  <base href="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Bear-Haven/">
+ function iadError(){
+    window.adw("unmute");
+                console.log('Error while open video ad:');
+  };
 
-  <style>
-    * { box-sizing: border-box; }
-    html, body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      overflow: hidden;
-      background: #08090d;
-    }
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-    #embed-html {
-      width: 100%;
-      height: 100%;
-      min-width: 0;
-      min-height: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-    #embed-html canvas {
-      display: block;
-      max-width: 100%;
-      max-height: 100%;
-      outline: none;
-      cursor: default;
-    }
-    #loading-screen {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 13px;
-      padding: 24px;
-      background: radial-gradient(ellipse at center, #1b202b 0%, #0b0d13 55%, #050609 100%);
-      text-align: center;
-      transition: opacity .35s ease, visibility .35s ease;
-    }
-    #loading-screen.is-hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-    .loader-ring {
-      width: 48px;
-      height: 48px;
-      border: 3px solid rgba(255,255,255,.13);
-      border-top-color: #e8edf7;
-      border-radius: 50%;
-      animation: spin .85s linear infinite;
-    }
-    #loading-title {
-      margin: 4px 0 0;
-      font-size: 19px;
-      font-weight: 700;
-      letter-spacing: .13em;
-    }
-    #loading-status {
-      max-width: 440px;
-      margin: 0;
-      color: #aeb7c7;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-    #retry-button {
-      display: none;
-      margin-top: 8px;
-      padding: 10px 18px;
-      border: 1px solid rgba(255,255,255,.2);
-      border-radius: 8px;
-      background: #fff;
-      color: #111;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    #retry-button:hover { background: #dce3ef; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @media (prefers-reduced-motion: reduce) {
-      .loader-ring { animation-duration: 2.5s; }
-      #loading-screen { transition: none; }
-    }
-  </style>
-</head>
-<body>
-  <main id="embed-html" aria-label="Bear Haven game"></main>
+  function iadFinished(){
+     window.adw("unmute");
+            console.log('I ad closed.');
+  };
+	  
 
-  <section id="loading-screen" role="status" aria-live="polite">
-    <div class="loader-ring" aria-hidden="true"></div>
-    <h1 id="loading-title">BEAR HAVEN</h1>
-    <p id="loading-status">Connecting to the game CDN...</p>
-    <button id="retry-button" type="button" onclick="location.reload()">Retry loading</button>
-  </section>
+function removel(){
+crazysdk.removeEventListener("adStarted", iadStarted);
+crazysdk.removeEventListener("adFinished", iadFinished);
+crazysdk.removeEventListener("adError", iadError);
 
-  <script>
-    (() => {
-      "use strict";
+}
 
-      const CDN_BASE = "https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Bear-Haven/";
-      const RAW_BASE = "https://raw.githubusercontent.com/lostgemsy/gameList-284/main/Bear-Haven/";
-      const statusText = document.getElementById("loading-status");
-      const loadingScreen = document.getElementById("loading-screen");
-      const retryButton = document.getElementById("retry-button");
-      const baseElement = document.querySelector("base");
+      function showFullscreenAd(){
+	  removel();
+      crazysdk.addEventListener("adStarted", iadStarted);
+      crazysdk.addEventListener("adError", iadError);
+      crazysdk.addEventListener("adFinished", iadFinished);
+    	crazysdk.requestAd("midgame");
+	  
+	  }
 
-      let gameScriptStarted = false;
-      let gameReady = false;
+     function showRewardedAd(){
+   removel();
+      crazysdk.addEventListener("adStarted", iadStarted);
+      crazysdk.addEventListener("adError", iadError);
+      crazysdk.addEventListener("adFinished", iadFinished);
+    	crazysdk.requestAd("midgame");
+	  
+	  }
+	   
+	 
+	   
+	   </script>
+       <link rel="canonical" href="https://www.crazygames.com/game/bear-haven"><link rel="stylesheet" href="https://bear-haven.game-files.crazygames.com/bear-haven/2/html/gwt/chrome/chrome.css"><script src="https://bear-haven.game-files.crazygames.com/bear-haven/2/html/D0758EAE8291F4B5D2242435828FDCF0.cache.js"></script></head>
 
-      function setStatus(message) {
-        statusText.textContent = message;
-      }
+       <body style="margin: 0px;">
+              <!--a class="superdev" href="javascript:%7B%20window.__gwt_bookmarklet_params%20%3D%20%7B'server_url'%3A'http%3A%2F%2Flocalhost%3A9876%2F'%7D%3B%20var%20s%20%3D%20document.createElement('script')%3B%20s.src%20%3D%20'http%3A%2F%2Flocalhost%3A9876%2Fdev_mode_on.js'%3B%20void(document.getElementsByTagName('head')%5B0%5D.appendChild(s))%3B%7D">&#8635;</a-->
+              <div align="center" id="embed-html"><table cellspacing="0" cellpadding="0" style="width: 1347px; height: 894px;"><tbody><tr><td align="center" style="vertical-align: middle;"><canvas width="1347" height="894" style="width: 1347px; height: 894px;"></canvas></td></tr></tbody></table></div>
+              <script type="text/javascript" src="html/html.nocache.js"></script>
+       
 
-      function showError(message) {
-        setStatus(message || "The game could not be loaded. Check your connection and try again.");
-        retryButton.style.display = "inline-block";
-        document.querySelector(".loader-ring").style.display = "none";
-      }
+       <script>
+              function handleMouseDown(evt) {
+                evt.preventDefault();
+                evt.stopPropagation();
+                window.focus();
+              }
 
-      function hideLoader() {
-        if (gameReady) return;
-        gameReady = true;
-        loadingScreen.classList.add("is-hidden");
-        setTimeout(() => loadingScreen.remove(), 500);
-      }
+              function handleMouseUp(evt) {
+                evt.preventDefault();
+                evt.stopPropagation();
+              }
+              document.addEventListener('contextmenu', event => event.preventDefault());
+              document.getElementById('embed-html').addEventListener('mousedown', handleMouseDown, false);
+              document.getElementById('embed-html').addEventListener('mouseup', handleMouseUp, false);
+       </script>
 
-      // GWT creates the game canvas after its compiled module has started.
-      const gameObserver = new MutationObserver(() => {
-        if (document.querySelector("#embed-html canvas")) {
-          setStatus("Game started.");
-          hideLoader();
-          gameObserver.disconnect();
-        }
-      });
-      gameObserver.observe(document.getElementById("embed-html"), {
-        childList: true,
-        subtree: true
-      });
-
-      // CrazyGames SDK is optional for the game to start. A blocked SDK must not
-      // prevent the actual game files from loading.
-      window.crazysdk = null;
-      window.sdk = null;
-
-      function initCrazyGamesSDK() {
-        try {
-          if (!window.CrazyGames || !window.CrazyGames.CrazySDK) return;
-          window.crazysdk = window.CrazyGames.CrazySDK.getInstance();
-          window.sdk = window.crazysdk;
-          window.crazysdk.init();
-        } catch (error) {
-          console.warn("CrazyGames SDK could not initialize:", error);
-        }
-      }
-
-      const crazyScript = document.createElement("script");
-      crazyScript.src = "https://sdk.crazygames.com/crazygames-sdk-v1.js";
-      crazyScript.async = true;
-      crazyScript.onload = initCrazyGamesSDK;
-      crazyScript.onerror = () => console.warn("CrazyGames SDK unavailable; continuing without it.");
-      document.head.appendChild(crazyScript);
-
-      function muteGame(muted) {
-        try {
-          if (typeof window.adw === "function") window.adw(muted ? "mute" : "unmute");
-        } catch (error) {
-          console.warn("Game audio callback failed:", error);
-        }
-      }
-
-      function removeAdListeners() {
-        const sdk = window.crazysdk;
-        if (!sdk) return;
-        ["adStarted", "adFinished", "adError"].forEach(eventName => {
-          try { sdk.removeEventListener(eventName, adCallbacks[eventName]); } catch (_) {}
-        });
-      }
-
-      const adCallbacks = {
-        adStarted: () => muteGame(true),
-        adFinished: () => muteGame(false),
-        adError: () => muteGame(false)
-      };
-
-      window.showFullscreenAd = function() {
-        const sdk = window.crazysdk;
-        if (!sdk) return;
-        removeAdListeners();
-        Object.entries(adCallbacks).forEach(([name, callback]) => {
-          sdk.addEventListener(name, callback);
-        });
-        try { sdk.requestAd("midgame"); } catch (error) {
-          console.warn("Fullscreen ad request failed:", error);
-          muteGame(false);
-        }
-      };
-
-      window.showRewardedAd = window.showFullscreenAd;
-
-      function loadGameBootstrap(useFallback) {
-        if (gameScriptStarted) return;
-        gameScriptStarted = true;
-
-        const sourceBase = useFallback ? RAW_BASE : CDN_BASE;
-        baseElement.href = sourceBase;
-        const script = document.createElement("script");
-        script.type = "text/javascript";
-        script.src = sourceBase + "html/html.nocache.js";
-        script.async = true;
-
-        script.onload = () => {
-          setStatus("Game files downloaded. Starting Bear Haven...");
-          // The GWT bootstrap loads its browser-specific compiled module next.
-        };
-
-        script.onerror = () => {
-          script.remove();
-          if (!useFallback) {
-            gameScriptStarted = false;
-            setStatus("Primary CDN unavailable. Trying the backup CDN...");
-            loadGameBootstrap(true);
-          } else {
-            showError("Both game CDNs failed to respond. Please try again later.");
-          }
-        };
-
-        document.head.appendChild(script);
-      }
-
-      window.addEventListener("error", event => {
-        if (event.target && event.target !== window && event.target.tagName === "SCRIPT") {
-          console.error("Game resource failed:", event.target.src);
-        }
-      }, true);
-
-      window.addEventListener("unhandledrejection", event => {
-        console.error("Game loading error:", event.reason);
-      });
-
-      document.addEventListener("contextmenu", event => event.preventDefault());
-
-      // Keep mouse input inside the game and prevent the page from stealing focus.
-      const gameContainer = document.getElementById("embed-html");
-      ["mousedown", "mouseup"].forEach(type => {
-        gameContainer.addEventListener(type, event => {
-          event.preventDefault();
-          event.stopPropagation();
-          window.focus();
-        }, false);
-      });
-
-      // GWT sometimes takes longer on a cold CDN cache; show a useful message
-      // instead of leaving a silent blank page.
-      setTimeout(() => {
-        if (!gameReady && retryButton.style.display !== "inline-block") {
-          setStatus("Still loading game files... Large files may take a little longer.");
-        }
-      }, 25000);
-
-      setTimeout(() => {
-        if (!gameReady) showError("The game is taking too long to start. Check your connection and retry.");
-      }, 90000);
-
-      loadGameBootstrap(false);
-    })();
-  </script>
-</body>
-</html>
+<iframe id="html" tabindex="-1" style="position: absolute; width: 0px; height: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; left: -1000px; top: -1000px;"></iframe></body></html>
