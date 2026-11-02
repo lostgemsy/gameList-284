@@ -166,7 +166,7 @@
       multiplayerButton.disabled = true;
       multiplayerButton.textContent = "LOADING MULTIPLAYER...";
       try {
-        multiplayerModulePromise ||= import("https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@8a7b6ae83e12bd1c1039f5ecf89a539230474963/Dont-Splash/multiplayer.js");
+        multiplayerModulePromise ||= import("https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@de0e0da1af4082c1190e76d0e7d5c12906d238c1/Dont-Splash/multiplayer.js");
         const multiplayer = await multiplayerModulePromise;
         const open = multiplayer.openMultiplayer || multiplayer.default?.openMultiplayer;
         if (typeof open !== "function") throw new Error("The downloaded multiplayer.js does not export openMultiplayer(). Refresh the CDN copy and try again.");
