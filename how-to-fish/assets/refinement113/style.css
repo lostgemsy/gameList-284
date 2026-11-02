@@ -1,0 +1,64 @@
+/* 1.13 — mobile HUD collision and quick-action centering. */
+/* The ammo counter is a badge of the weapon slot. This keeps it out of the right-hand
+   touch cluster in landscape and out of health/capacity cards in portrait. */
+#hud .tool-slot[data-slot="weapon"] #ammo-panel{
+  position:absolute!important;
+  z-index:9;
+  top:-10px!important;
+  right:-8px!important;
+  bottom:auto!important;
+  left:auto!important;
+  transform:none!important;
+  box-sizing:border-box;
+  min-width:52px!important;
+  padding:3px 6px!important;
+  border:1px solid rgba(232,210,157,.56)!important;
+  border-radius:9px!important;
+  background:rgba(5,36,48,.96)!important;
+  box-shadow:0 3px 9px rgba(0,15,24,.38)!important;
+  white-space:nowrap;
+  pointer-events:none;
+  text-shadow:0 1px 2px rgba(0,0,0,.55);
+}
+#hud .tool-slot[data-slot="weapon"] #ammo-panel:not(.hidden){display:flex!important;align-items:baseline;justify-content:center;gap:3px}
+#hud .tool-slot[data-slot="weapon"] #ammo-panel strong{font-size:17px!important;line-height:1!important;color:#f3dfa8!important}
+#hud .tool-slot[data-slot="weapon"] #ammo-panel span{font-size:9px!important;line-height:1!important;color:#b8d5cf!important}
+html.touch-input #hud .tool-slot[data-slot="weapon"] #ammo-panel{
+  top:-9px!important;
+  right:-7px!important;
+  min-width:48px!important;
+  padding:3px 5px!important;
+}
+html.touch-input #hud .tool-slot[data-slot="weapon"] #ammo-panel strong{font-size:16px!important}
+html.touch-input #hud .tool-slot[data-slot="weapon"] #ammo-panel span{font-size:8px!important}
+
+/* Mobile quick actions use icon-only buttons. Do not keep an invisible text grid row,
+   otherwise the map / collection / leaderboard artwork sits visibly too high. */
+html.touch-input #hud .quick-actions button{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex-direction:column!important;
+  padding:0!important;
+  grid-template-rows:none!important;
+  line-height:1!important;
+}
+html.touch-input #hud .quick-actions small{display:none!important}
+html.touch-input #hud .quick-actions .hud-action-icon{
+  position:static!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  align-self:center!important;
+  justify-self:center!important;
+  margin:0!important;
+  transform:none!important;
+  line-height:1!important;
+}
+html.touch-input #hud .quick-actions .hud-action-icon>img,
+html.touch-input #hud .quick-actions .hud-action-icon>svg{
+  display:block!important;
+  margin:auto!important;
+  max-width:100%!important;
+  max-height:100%!important;
+}

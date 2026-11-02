@@ -1,0 +1,12 @@
+/* 1.12 moderation input/scroll hardening. */
+html,body{width:100%;height:100%;margin:0!important;overflow:hidden!important;overscroll-behavior:none!important;overscroll-behavior-y:none!important}
+body{position:fixed!important;inset:0!important;-webkit-text-size-adjust:100%;-webkit-touch-callout:none!important}
+#app{position:fixed;inset:0;overflow:hidden!important;overscroll-behavior:none!important;-webkit-touch-callout:none!important}
+#app,#app *:not(input):not(textarea):not([contenteditable="true"]){-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}
+#game-canvas,#hud,.touch-controls,.touch-look-zone,.touch-move-zone,.touch-button{touch-action:none!important}
+#panel-content,.renewal-body,#pause-menu .pause-card,#main-menu .hero-card,.story-card,.story-card p,.ending-copy,.field-guide{overscroll-behavior:contain!important;touch-action:pan-y!important}
+#panel-tabs{overscroll-behavior:contain!important;touch-action:pan-x!important}
+img{-webkit-user-drag:none;user-drag:none}
+html.game-ready-pending112 #start-btn,html.game-ready-pending112 #continue-btn{pointer-events:none!important;filter:saturate(.65) brightness(.9)}
+
+.harbor-modal-content14,.catch-showcase__card{overscroll-behavior:contain!important;touch-action:pan-y!important;-webkit-overflow-scrolling:touch}

@@ -1,0 +1,76 @@
+/* Keep the existing responsive layouts and touch action targets. */
+#deck-encounter.deck-resting115 {border-color:rgba(154,232,198,.72);}
+#deck-encounter.deck-resting115 span {color:#c6f5dd;}
+@media (prefers-reduced-motion:reduce){#deck-encounter{transition:none;}}
+
+/* The pause readout is live fight information, not a repeated tutorial tip. */
+body.tutorial-complete110 #hud #deck-encounter>span,
+body.weapon-learned15 #hud #deck-encounter>span {display:block!important;grid-column:1/-1;font-size:12px;line-height:1.3;margin:3px 0 0;}
+
+
+/* 1.16 tutorial: boat practice must keep its route label visible even when the normal tutorial hides on-screen captions. */
+body.guide-active .guide-target[data-guide-step="7"]:not([hidden]) > strong,
+body.guide-active .guide-target[data-guide-step="8"]:not([hidden]) > strong,
+body.guide-active .guide-target[data-guide-step="9"]:not([hidden]) > strong {
+  display:block!important;
+}
+@media (max-aspect-ratio:19/20) {
+  body.guide-active .guide-target[data-guide-step="7"]:not([hidden]) > strong,
+  body.guide-active .guide-target[data-guide-step="8"]:not([hidden]) > strong,
+  body.guide-active .guide-target[data-guide-step="9"]:not([hidden]) > strong {
+    max-width:150px!important;
+    font-size:10px!important;
+    line-height:1.15!important;
+    padding:5px 7px!important;
+  }
+}
+
+
+/* 1.17 mobile tutorial: one readable instruction layer, no stacked transient messages. */
+html.touch-input body.guide-active #app #hud #toast-stack{display:none!important}
+html.touch-input body.guide-active #app #hud #boat-hud,
+html.touch-input body.guide-active #app #hud .sea-navigation{display:none!important}
+
+/* Keep the bite callout, but make it part of the tutorial card instead of a second popup. */
+html.touch-input body.guide-active #app #hud .field-guide.has-coach110 .catch-coach19{
+  display:block!important;
+  margin-top:4px!important;
+  padding:6px 0 0!important;
+  border-top:1px solid rgba(184,225,205,.24)!important;
+}
+html.touch-input body.guide-active #app #hud .field-guide.has-coach110 .catch-coach19 small{
+  display:block!important;
+  margin:0 0 3px!important;
+  color:#ffe19b!important;
+  font-size:10px!important;
+  line-height:1.15!important;
+  font-weight:900!important;
+  letter-spacing:.12em!important;
+}
+html.touch-input body.guide-active #app #hud .field-guide.has-coach110 .catch-coach19 strong{
+  display:block!important;
+  font-size:13px!important;
+  line-height:1.28!important;
+}
+html.touch-input body.guide-active #app #hud .field-guide.has-coach110 .catch-coach19>span{
+  display:block!important;
+  margin-top:2px!important;
+  font-size:11px!important;
+  line-height:1.28!important;
+}
+
+/* Boat practice already explains the action in the guide and on the world arrow. Hide the duplicate prompt. */
+html.touch-input body.guide-active[data-guide-step="7"] #app #hud #interaction-prompt,
+html.touch-input body.guide-active[data-guide-step="8"] #app #hud #interaction-prompt,
+html.touch-input body.guide-active[data-guide-step="9"] #app #hud #interaction-prompt{display:none!important}
+
+/* The actual green interaction button carries the action name on touch devices. */
+html.touch-input body.guide-active #app #hud .touch-button[data-touch-key="KeyE"] small{
+  display:block!important;
+  max-width:58px!important;
+  font-size:8px!important;
+  line-height:1.02!important;
+  white-space:normal!important;
+  text-align:center!important;
+  overflow-wrap:anywhere!important;
+}

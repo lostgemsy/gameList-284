@@ -1,0 +1,58 @@
+/* How to fish 1.5 — compact HUD, accessible responsive dialogs. */
+.renewal-overlay {position:fixed;inset:0;z-index:15000;display:grid;place-items:center;padding:18px;background:rgba(3,20,27,.8);backdrop-filter:blur(5px);color:#f7efd6;}
+.renewal-dialog {width:min(690px,100%);max-height:calc(100dvh - 36px);display:flex;flex-direction:column;background:linear-gradient(145deg,#153f45,#0a242f);border:1px solid #8a9c86;border-radius:20px;box-shadow:0 20px 80px #0008;overflow:hidden;font-family:Arial,sans-serif;}
+.renewal-header {display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;border-bottom:1px solid #6f8c794a;flex-shrink:0;}
+.renewal-header h2 {margin:0;font-size:23px;line-height:1.2;color:#ffe1a0;}
+.renewal-close {font-size:28px;line-height:1;width:42px;height:42px;flex:0 0 42px;border-radius:12px;background:#244e54;color:#fff;border:1px solid #9bbaa080;cursor:pointer;}
+.renewal-body {padding:20px 22px;overflow:auto;overscroll-behavior:contain;line-height:1.55;}
+.renewal-body p {margin:0 0 15px;font-size:15px;}.renewal-body button {cursor:pointer;min-height:44px;}.renewal-body button:disabled{cursor:default;opacity:.5;}
+.renewal-body .primary-btn,.renewal-body .secondary-btn {width:100%;padding:12px 16px;font-size:14px;min-width:0;white-space:normal;line-height:1.35;margin:5px 0;}
+.renewal-personal {padding:15px;border-radius:12px;background:#09232c;border:1px solid #99b58a38;margin-bottom:18px;}
+.renewal-personal strong {font-size:17px;color:#ffdf9a;}.renewal-personal p {margin:9px 0 0;}
+.renewal-muted,.renewal-status {color:#c0d3ce;}.renewal-status{min-height:45px;}
+.renewal-tabs {display:flex;gap:10px;margin-bottom:16px;}.renewal-tabs button {flex:1;}.renewal-tabs .selected {border-color:#f1d081;background:#386366;color:#ffe6b7;}
+.renewal-ranking table {width:100%;border-collapse:collapse;text-align:left;table-layout:fixed;}
+.renewal-ranking th,.renewal-ranking td {padding:11px 10px;border-bottom:1px solid #ffffff18;word-break:break-word;}
+.renewal-ranking th{color:#a9c9c3;font-size:12px;text-transform:uppercase;}
+.renewal-ranking th:first-child,.renewal-ranking td:first-child {width:70px;}
+.renewal-ranking th:last-child,.renewal-ranking td:last-child {width:104px;text-align:right;}
+.renewal-ranking .is-you {background:#d5b25b22;color:#ffe4a1;}
+.renewal-upgrade {border:1px solid #89b4a74d;padding:15px 17px;border-radius:12px;margin:12px 0;background:#132f38;}
+.renewal-upgrade h3 {margin:0 0 5px;font-size:18px;color:#ffd88d;}.renewal-upgrade p{margin-bottom:8px;}
+.renewal-menu-row {display:flex;gap:12px;margin-top:13px;}.renewal-menu-row .secondary-btn{flex:1;width:auto;min-width:0;margin:0;font-size:13px;min-height:40px;}
+#main-menu .hero-card{max-height:calc(100dvh - 40px);overflow-y:auto;scrollbar-width:thin;}
+#game-title span{font-size:clamp(25px,3vw,40px);}#game-title strong{font-size:clamp(42px,4.4vw,60px);}
+#pause-menu .pause-card{max-height:calc(100dvh - 40px);overflow-y:auto;width:min(480px,calc(100vw - 30px));padding:26px;}
+#pause-menu .pause-card .secondary-btn{min-height:38px;padding:9px 14px;font-size:13px;margin-top:8px;}
+#pause-menu .pause-card p{margin:10px 0;}.pause-card .pause-goal{display:none;}
+html:root #app #hud #catch-meter {width:286px!important;padding:9px 11px!important;max-width:calc(100% - 24px);border-radius:12px!important;}
+#catch-meter .catch-heading {font-size:12px!important;gap:8px;}
+#catch-meter .catch-heading span{font-size:13px!important;}#catch-meter .catch-heading small{font-size:10px!important;}
+#catch-meter .fight-readout {font-size:10px!important;padding:5px 0!important;margin:0!important;gap:6px;}
+#catch-meter .fight-readout strong,#catch-meter .fight-readout span{font-size:10px!important;}
+#catch-meter .tension-track{height:10px!important;margin:5px 0!important;}
+#catch-meter .catch-progress{font-size:9px!important;gap:7px;margin-top:5px!important;}
+#catch-meter .catch-progress b{height:5px!important;}
+#catch-meter #catch-hint {font-size:10px!important;line-height:1.35;margin:6px 0 0!important;}
+.rod-learned15 #catch-hint,.weapon-learned15 #deck-encounter>span,.harpoon-learned15 .harpoon-readout>span{display:none!important;}
+/* Tool names remain visible; only repeated instructions disappear. */
+.difficulty-badge15 {position:absolute;top:5px;right:7px;left:auto;padding:2px 5px;border:1px solid #d9be774d;border-radius:6px;background:#0d3033ba;color:#f5dfa6;font-size:8px;line-height:11px;letter-spacing:.7px;pointer-events:none;}
+.intro-active .difficulty-badge15,.story-active .difficulty-badge15{display:none;}
+.renewal-cup {font-size:23px;line-height:1;display:block;color:#ffd681;}
+.renewal-ending-note {font-size:15px!important;}.ending-copy{max-height:90dvh;overflow:auto;}.ending-copy .secondary-btn{margin-top:8px;width:100%;padding:14px;}
+.renewal-audio-settings button{margin:5px 5px 8px 0;padding:12px;}
+.renewal-dialog button:focus-visible,.renewal-menu-row button:focus-visible{outline:3px solid #ffe298;outline-offset:3px;}
+[hidden]{display:none!important;}
+@media(max-width:600px){
+ .renewal-overlay{padding:10px;}.renewal-dialog{max-height:calc(100dvh - 20px);border-radius:14px;}.renewal-header{padding:12px 15px;}.renewal-header h2{font-size:19px;}.renewal-body{padding:15px;}.renewal-body p{font-size:13px;}
+ .renewal-tabs{gap:6px;}.renewal-tabs button{font-size:12px!important;padding:10px 6px!important;}.renewal-ranking th,.renewal-ranking td{padding:9px 6px;font-size:13px;}.renewal-ranking th:first-child,.renewal-ranking td:first-child{width:52px;}.renewal-ranking th:last-child,.renewal-ranking td:last-child{width:75px;}
+ .renewal-menu-row .secondary-btn{font-size:11px;padding:9px 6px;}.difficulty-badge15{top:4px;right:7px;left:auto;}
+}
+@media(prefers-reduced-motion:reduce){.renewal-overlay{backdrop-filter:none;}}
+
+/* Preserve five separate hit targets on the portrait HUD. */
+:root[data-layout14="portrait"] #app #hud .toolbelt{width:234px!important}
+:root[data-layout14="portrait"] #app #hud .tool-slot{width:72px!important}
+:root[data-layout14="portrait"] #app #hud .quick-actions button{width:43px!important}
+:root[data-layout14="portrait"] #app #hud .quick-actions .hud-action-icon{width:32px!important;height:32px!important}
+:root[data-layout14="portrait"] #app #hud .quick-actions small{font-size:9px!important}

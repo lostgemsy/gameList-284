@@ -1,0 +1,27 @@
+/* Shared shop styles are deliberately retained: no separate harpoon modal. */
+.clean-art16{width:100%;height:100%;object-fit:contain!important;object-position:center;display:block;filter:drop-shadow(0 5px 6px #0003)}
+.harpoon-card16 .shop-card__icon img{object-fit:contain}
+.harpoon-card16 .stat-grid{font-variant-numeric:tabular-nums}
+.intro16 .intro-heading{left:7vw;right:7vw;bottom:17vh;text-align:left;max-width:1000px}
+.intro16 .intro-heading h2{font-size:clamp(34px,5.4vw,78px);line-height:1.07;letter-spacing:.045em;max-width:950px;font-weight:900;text-shadow:0 3px 24px #04131fee,0 1px 4px #000b}
+.intro16 .intro-heading small,.intro16 .intro-heading p{display:none!important}
+.intro16 .intro-letterbox{height:9vh}
+.intro16 .intro-skip,.voyage16 .intro-skip{bottom:2.4vh;right:3vw;font-size:12px;min-height:42px;letter-spacing:.12em;border-color:#abcacb66;background:#0a243499;backdrop-filter:blur(8px)}
+.voyage16{position:fixed;inset:0;z-index:88;pointer-events:none;color:#f2ecda}
+.voyage16[hidden]{display:none!important}
+.voyage16-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 44%,transparent 25%,#03152066 100%)}
+.voyage16-bar{position:absolute;left:0;right:0;height:9vh;background:#05131a;z-index:2}
+.voyage16-bar.top{top:0}.voyage16-bar.bottom{bottom:0}
+.voyage16-fade{position:absolute;inset:0;background:#05131a;z-index:1}
+.voyage16-heading{position:absolute;left:7vw;bottom:17vh;z-index:3;text-shadow:0 3px 20px #052537}
+.voyage16-heading span{display:block;font-size:11px;letter-spacing:.32em;color:#b5d7d3;font-weight:800}
+.voyage16-heading h2{font-size:clamp(30px,5.2vw,68px);max-width:85vw;line-height:1.05;margin:.22em 0 0;font-weight:900}
+.voyage16-track{height:2px;position:absolute;left:7vw;right:7vw;bottom:9vh;z-index:4;background:#e4cf9433}
+.voyage16-track i{display:block;background:#e5c578;height:100%;transform-origin:left}
+.voyage16 .intro-skip{pointer-events:auto;z-index:5;position:absolute}
+.voyage-active16 #hud,.voyage-active16 #panel-layer,.voyage-active16 .harpoon-readout,.voyage-active16 .touch-controls,.voyage-active16 #toast-stack{visibility:hidden!important;pointer-events:none!important}
+body.voyage-active16 #pause-menu{z-index:200}
+@media(max-width:600px){.intro16 .intro-heading,.voyage16-heading{left:6vw;bottom:23vh}.intro16 .intro-heading h2{font-size:clamp(29px,8vw,45px)}.voyage16-heading h2{font-size:clamp(30px,8vw,47px)}.voyage16 .intro-skip,.intro16 .intro-skip{font-size:10px;bottom:1.8vh;max-width:90vw}.voyage16-heading span{font-size:10px}}
+
+/* The legacy intro places Skip at the top; reset that edge in the new shots. */
+.voyage16 .intro-skip,.intro-overlay.intro16 .intro-skip{top:auto!important;left:auto;height:auto;width:auto;bottom:2.4vh;right:3vw;min-height:40px;max-height:48px}

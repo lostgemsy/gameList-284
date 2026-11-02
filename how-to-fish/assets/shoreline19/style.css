@@ -1,0 +1,29 @@
+/* 1.9 — readable controls without blur filters or layout animation. */
+.touch-copy19 kbd,.touch-input kbd{display:none!important}
+.touch-copy19 .control-row.mobile-instructions19{display:block!important;font-size:12px;line-height:1.5;opacity:.8;text-align:center}
+.catch-coach19{position:fixed;z-index:38;left:50%;top:45%;transform:translate(-50%,-50%);width:min(660px,72vw);box-sizing:border-box;padding:18px 26px 20px;text-align:center;border:1px solid #bcd9bf8c;border-radius:18px;background:linear-gradient(145deg,#072e3aec,#124348eb);color:#fff7df;box-shadow:0 12px 40px #001e2e40;pointer-events:none;white-space:normal}
+.catch-coach19[hidden]{display:none!important}
+.catch-coach19 small{display:block;margin-bottom:8px;color:#ffe2a0;font-size:14px;font-weight:800;letter-spacing:.17em}
+.catch-coach19 strong{display:block;font-family:inherit;font-size:clamp(24px,3.2vw,38px);line-height:1.14;font-weight:900;white-space:pre-line;text-shadow:0 2px 2px #062732}
+.catch-coach19>span{display:block;margin-top:11px;color:#e0eee5;font-size:14px;line-height:1.4}
+.catch-coach19.warning19{border-color:#efb47c;background:linear-gradient(145deg,#512c25ed,#503f2feb)}
+.hold-target19{outline:3px solid #ffe2a0!important;outline-offset:5px;animation:hold-glow19 1.4s ease-in-out infinite}
+@keyframes hold-glow19{50%{box-shadow:0 0 0 8px #ffdf9628,0 0 28px #ffcd7259}}
+.audio-mixer19{border:1px solid #aac9bd47;background:#0b303bce;border-radius:14px;padding:18px 22px;margin:0 0 16px;color:#f6e9c9;text-align:left}
+.audio-mixer19 h3{font-size:14px;letter-spacing:.12em;margin:0 0 15px;color:#efcc87}
+.audio-mixer19 .mix-row19{display:block;margin:0 0 13px}.audio-mixer19 .mix-row19:last-child{margin-bottom:0}
+.mix-title19{display:flex;align-items:center;justify-content:space-between;gap:14px}.mix-title19 strong{font-size:15px}.mix-title19 output{font-variant-numeric:tabular-nums;color:#f3d59a;font-size:14px;min-width:45px;text-align:right}
+.audio-mixer19 input[type=range]{display:block;width:100%;height:30px;margin:4px 0 0;accent-color:#ecc884;touch-action:pan-y;cursor:pointer;border:0;box-shadow:none;background:transparent}
+.audio-mixer19 small{display:block;font-size:12px;line-height:1.3;color:#b5cfc8}
+.audio-mixer19.compact19{padding:12px 17px;margin:12px 0 0}.compact19 h3{font-size:11px;margin-bottom:8px}.compact19 .mix-row19{margin-bottom:6px}.compact19 .mix-title19 strong{font-size:13px}
+.menu-mixer19{margin-top:13px;max-width:480px;align-self:center;width:100%;font-size:13px;color:#ebd2a0}.menu-mixer19 summary{cursor:pointer;text-align:center;padding:7px;list-style-position:inside}.menu-mixer19 .audio-mixer19{margin-top:6px}
+#pause-menu .pause-card{max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+#pause-menu .audio-mixer19{width:100%;box-sizing:border-box}
+@media(max-width:700px){.catch-coach19{width:calc(100vw - 36px);top:44%;padding:14px 14px 16px;border-radius:14px}.catch-coach19 strong{font-size:25px}.catch-coach19 small{font-size:11px;letter-spacing:.12em;margin-bottom:7px}.catch-coach19>span{font-size:12px;margin-top:8px}.audio-mixer19{padding:14px 16px}.menu-mixer19{margin-top:3px}}
+@media(max-height:540px) and (orientation:landscape){.catch-coach19{width:min(480px,60vw);top:43%;padding:11px 16px}.catch-coach19 strong{font-size:22px}.catch-coach19 small{font-size:10px;margin-bottom:6px}.catch-coach19>span{font-size:11px;margin-top:6px}.compact19 h3{display:none}.audio-mixer19.compact19{padding:9px 15px}.menu-mixer19[open]{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;z-index:5;background:#092e3af5;border:1px solid #ccb777;border-radius:12px;padding:5px 12px;width:320px;max-width:90vw}}
+@media(prefers-reduced-motion:reduce){.hold-target19{animation:none}}
+body.reduced-motion .hold-target19{animation:none}
+
+/* The lesson is above world markers; never put target labels over its text. */
+.catch-coach-active19 .guide-target{visibility:hidden!important}
+@media(max-height:540px) and (orientation:landscape){.catch-coach-active19 .field-guide{visibility:hidden!important}}

@@ -1,0 +1,50 @@
+/* Whole-document protection: story/intro/travel/shop dialogs are siblings of
+   #app, not its descendants. WebKit needs its prefixed selection/callout rules. */
+html,
+body,
+body *,
+body *::before,
+body *::after {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+/* Keep actual text entry usable. Range sliders and buttons are not text fields.
+   Include #app to override the older, more specific moderation CSS there. */
+html body :is(input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], input[type="tel"], input[type="password"], input[type="number"], textarea),
+html body #app :is(input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], input[type="tel"], input[type="password"], input[type="number"], textarea),
+html body [contenteditable]:not([contenteditable="false"]),
+html body [contenteditable]:not([contenteditable="false"]) *,
+html body #app [contenteditable]:not([contenteditable="false"]),
+html body #app [contenteditable]:not([contenteditable="false"]) * {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+
+html body img,
+html body svg,
+html body canvas,
+html body a {
+  -webkit-user-drag: none !important;
+}
+
+/* Do not set touch-action:none on body: that would disable scrolling inside
+   panels. The actual game surface retains the existing touch-action:none. */
+.adventure-choice17__card,
+[data-native-scroll] {
+  overscroll-behavior: contain !important;
+  touch-action: pan-y !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Russian UI: keep keyboard Escape hints out of the visible interface.
+   English keeps the hints unchanged. */
+html[lang="ru"] #pause-menu .pause-card > p:not(.pause-goal),
+html[lang="ru"] #hud .main-menu-button small {
+  display: none !important;
+}

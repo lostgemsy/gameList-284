@@ -1,0 +1,125 @@
+/* One action context at a time. This sheet intentionally follows both skins. */
+[hidden]{display:none!important}
+#interaction-prompt{pointer-events:auto;cursor:pointer;max-width:calc(100vw - 28px);z-index:20}
+#interaction-prompt:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #ffe0a4;outline-offset:3px}
+#boat-hud{position:absolute!important;left:18px!important;right:auto!important;top:auto!important;bottom:120px!important;transform:none!important;width:252px!important;min-width:0!important;min-height:0!important;padding:10px 12px!important;display:grid;grid-template-columns:1fr auto;grid-template-areas:'heading speed' 'hint hint' 'anchor anchor';gap:5px 8px!important;z-index:8!important;border:1px solid #77c6be88!important;border-radius:10px!important;visibility:visible!important;pointer-events:auto}
+#boat-hud .boat-throttle{display:none!important}
+#boat-name{font-size:13px!important;line-height:1.2}
+#boat-speed{font-size:20px!important}
+#boat-status{font:11px/1.35 Arial,sans-serif!important;grid-area:hint}
+.desktop-anchor{grid-area:anchor;border:1px solid #b2d5c560;border-radius:6px;background:#174755;color:#e7f0da;padding:7px;font:700 11px Arial;cursor:pointer}
+#toolbelt{z-index:12!important}
+.harpoon-readout{bottom:120px!important;width:350px;max-width:calc(100vw - 28px);z-index:8}
+.context-action{position:absolute;bottom:121px;left:50%;transform:translateX(-50%);width:max-content;max-width:min(480px,calc(100vw - 32px));padding:7px 11px;border-radius:8px;background:#052832d9;color:#e5f1db;font:12px/1.35 Arial,sans-serif;text-align:center;pointer-events:none}
+.cargo-detail{display:block;white-space:nowrap;font:10px/1.3 Arial;color:#bcdbd3;margin-left:5px}
+.sea-navigation{position:absolute;top:220px;left:18px;width:252px;padding:10px 12px;background:#062935db;border-left:2px solid #d9c787;border-radius:0 8px 8px 0;pointer-events:none}
+.sea-navigation strong,.sea-navigation span{display:block;font:700 12px/1.4 Arial;color:#e9eecf}
+.sea-navigation span{margin-top:4px;font-weight:400;font-size:11px;color:#bed8d3}
+.ocean-warning{position:absolute;top:138px;left:50%;transform:translateX(-50%);width:min(450px,70vw);text-align:center;padding:10px 14px;background:#382d20ee;border:1px solid #f0b474aa;border-radius:9px;color:#ffebc0;z-index:10;pointer-events:none}
+.ocean-warning strong,.ocean-warning span{display:block;font:700 14px/1.35 Arial}
+.ocean-warning span{font-size:12px;font-weight:400;margin-top:5px}
+.ocean-active #quest-tracker,.fighting-fish #quest-tracker,.deck-active #quest-tracker{visibility:hidden!important}
+.ocean-active .world-captions,.fighting-fish .world-captions,.deck-active .world-captions{visibility:hidden!important}
+#catch-meter{z-index:10}
+.compact-shop{display:flex!important;align-items:center!important;gap:16px!important;padding:12px 14px!important;min-height:0!important;margin-bottom:12px!important}
+.compact-shop .shop-balance{flex:0 0 auto;padding:0!important;min-width:140px}
+.compact-shop .shop-balance strong{font-size:25px!important;line-height:1.1!important}
+.compact-shop .shop-balance small{font-size:9px!important}
+.compact-shop .shop-balance span{font-size:10px!important;margin-top:3px}
+.compact-shop .shop-next-goal{flex:1;min-width:0;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+.compact-shop .shop-next-goal small{font-size:9px!important}
+.compact-shop .shop-next-goal strong{font-size:15px!important;line-height:1.3!important}
+.compact-shop .shop-next-goal span{font-size:11px!important;margin-top:3px!important}
+.compact-shop .goal-progress-label,.compact-shop .goal-progress{display:none!important}
+.shop-card{position:relative}
+.honest-price{font:700 12px/1.3 Arial;color:#f0d79f;margin-top:7px}
+.goal-pin{padding:7px 9px;background:transparent;border:1px solid #acbda63a;border-radius:5px;color:#c8dcd2;font:11px Arial;cursor:pointer;min-height:32px;margin-top:7px}
+.goal-pin:hover{background:#244c51}
+.rank-details{margin:16px 0;color:#cadbd5;font:12px/1.5 Arial}
+.rank-details summary{cursor:pointer;padding:10px 0}
+.rank-details .rank-guide{display:block!important;padding:12px!important;max-width:620px}
+.rank-details .rank-guide p{font:12px/1.5 Arial!important}
+.shop-help{font:11px/1.5 Arial;color:#a9c6c2;padding:0 3px}
+.boat-preview{width:100%!important;height:125px!important;grid-column:1/-1;background:none!important;border:0!important;box-shadow:none!important;display:grid;place-items:center;overflow:hidden}
+.boat-preview img{width:100%;height:100%;object-fit:contain}
+.dock-return{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 14px;margin-bottom:12px;border:1px solid #9fb9a04d;border-radius:9px;background:#1b4549;color:#d3e3d5;font:12px/1.45 Arial}
+.dock-return button{font-size:11px!important;padding:10px 14px!important;white-space:nowrap}
+.reward-offer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid #c3bb8b44;border-radius:8px;color:#cddace;font:12px/1.4 Arial;margin:12px 0}
+.reward-offer button{font-size:12px!important;white-space:nowrap}
+.touch-input #boat-hud{left:12px!important;bottom:180px!important;width:200px!important;padding:8px 10px!important;grid-template-areas:'heading speed' 'hint hint'}
+.touch-input .desktop-anchor{display:none}
+.touch-input .touch-anchor{right:116px!important;bottom:116px!important;width:60px!important;height:46px!important;border-radius:10px!important;font:700 10px/1.2 Arial!important;padding:4px}
+.touch-input .context-action{bottom:179px;font-size:11px;max-width:290px}
+.touch-input .harpoon-readout{bottom:178px!important;max-width:290px!important;padding:8px!important}
+.touch-input .harpoon-readout span{font-size:10px!important}
+.touch-input .sea-navigation{left:12px;top:210px;width:200px;padding:8px 10px}
+.touch-input .world-captions{display:none}
+.touch-input .ocean-warning{top:98px;width:min(360px,65vw);padding:8px 10px}
+@media(max-width:650px){
+ .compact-shop{gap:10px!important;padding:10px!important;align-items:flex-start!important}
+ .compact-shop .shop-balance{min-width:98px}
+ .compact-shop .shop-balance strong{font-size:21px!important}
+ .compact-shop .shop-balance span{display:none}
+ .compact-shop .shop-next-goal strong{font-size:13px!important}
+ .compact-shop .shop-next-goal span{font-size:10px!important}
+ .dock-return,.reward-offer{align-items:stretch;flex-direction:column;gap:8px}
+ .dock-return button,.reward-offer button{min-height:40px}
+ .boat-preview{height:110px!important}
+ .sea-navigation{font-size:11px}
+ .touch-input #boat-hud{top:auto!important;bottom:284px!important;width:calc(100vw - 24px)!important;grid-template-areas:'heading speed' 'hint hint';padding:7px 10px!important}
+ .touch-input #boat-name{font-size:12px!important}
+ .touch-input #boat-speed{font-size:17px!important}
+ .touch-input #boat-status{font-size:10px!important}
+ .touch-input .sea-navigation{left:12px;top:255px;width:calc(100vw - 24px);padding:7px 10px}
+ .touch-input .context-action,.touch-input .harpoon-readout{bottom:218px!important;max-width:calc(100vw - 24px)!important;width:calc(100vw - 24px)!important;font-size:11px}
+ .touch-input .ocean-warning{top:208px;max-width:calc(100vw - 24px);width:calc(100vw - 24px)}
+ .touch-input .ocean-warning strong{font-size:12px}
+ .touch-input .ocean-warning span{font-size:11px}
+ .touch-input #interaction-prompt{top:auto!important;bottom:355px!important;max-width:calc(100vw - 24px);font-size:12px}
+ .touch-input .field-guide{top:205px!important;width:calc(100vw - 24px)!important;left:12px!important;padding:10px!important}
+ .touch-input .guide-copy>p{font-size:12px!important}
+ .touch-input .guide-keys{display:none}
+ .touch-input .field-guide .guide-skip{min-height:30px!important}
+ .touch-input .catch-ribbon{bottom:330px!important;top:auto!important;width:calc(100vw - 24px)!important;right:12px!important}
+ .touch-input #toast-stack{top:320px!important;bottom:auto!important;max-width:calc(100vw - 24px)!important;right:12px!important}
+}
+@media(max-height:550px) and (min-width:651px){
+ .touch-input #boat-hud{left:12px!important;top:140px!important;bottom:auto!important;width:200px!important;padding:7px 9px!important}
+ .touch-input #boat-status{font-size:10px!important}
+ .touch-input .sea-navigation{left:225px;top:83px;width:245px;padding:7px 10px}
+ .touch-input .context-action,.touch-input .harpoon-readout{bottom:15px!important;width:calc(100vw - 450px)!important;max-width:390px!important;min-width:220px!important;padding:7px 9px!important;font-size:10px}
+ .touch-input .ocean-warning{top:110px;width:300px;max-width:45vw}
+ .touch-input .ocean-warning strong{font-size:12px}
+ .touch-input .ocean-warning span{font-size:11px}
+ .touch-input #interaction-prompt{top:auto!important;bottom:95px!important;max-width:300px;font-size:12px}
+ .touch-input .field-guide{top:140px!important;width:235px!important;left:12px!important}
+ .touch-input .field-guide .guide-copy>p{font-size:11px!important;line-height:1.4}
+ .touch-input .guide-demo,.touch-input .guide-keys{display:none}
+ .touch-input #toast-stack{top:180px!important;right:210px!important;max-width:260px!important}
+ .compact-shop{padding:8px 12px!important;gap:12px!important;margin-bottom:8px!important}
+ .compact-shop .shop-balance strong{font-size:20px!important}
+ .shop-category-tabs{padding-top:2px!important;padding-bottom:6px!important;margin-bottom:6px!important}
+ .boat-preview{height:100px!important}
+}
+@media(prefers-reduced-motion:reduce){.ocean-warning,.boat-hud,.context-action{transition:none!important;animation:none!important}}
+
+.fighting-fish #boat-hud,.deck-active #boat-hud,.ocean-active #boat-hud{display:none!important}
+/* On short screens, show products immediately instead of a screen of headers. */
+@media(max-height:550px) and (min-width:651px){
+ .panel-heading{padding-bottom:6px!important}
+ #panel-title{font-size:21px!important}
+ #panel-tabs{padding-top:5px!important;padding-bottom:5px!important;gap:6px!important}
+ #panel-tabs .ui-tab{min-height:38px!important;padding:6px 10px!important}
+ .compact-shop{padding:6px 10px!important;min-height:49px!important}
+ .compact-shop .shop-balance span{display:none!important}
+ .compact-shop .shop-next-goal span{margin-top:1px!important}
+ .shop-category-tab{min-height:38px!important;padding:6px 10px!important}
+ .shop-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+ .shop-card.boat{grid-template-columns:98px minmax(0,1fr)!important;gap:7px 10px!important;padding:12px!important}
+ .shop-card.boat .boat-preview{grid-column:1!important;grid-row:1 / span 2!important;width:98px!important;height:76px!important;align-self:start!important}
+ .shop-card.boat .shop-card__heading{grid-column:2!important;grid-row:1!important;min-width:0}
+ .shop-card.boat>p{grid-column:2!important;grid-row:2!important;font-size:11px!important;line-height:1.4!important}
+ .shop-card.boat h3{font-size:15px!important;line-height:1.2!important}
+ .shop-card.boat .shop-card__heading small{font-size:8px!important}
+ .shop-card .stat-grid{font-size:11px!important}
+}

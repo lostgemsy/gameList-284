@@ -1,0 +1,109 @@
+/* A single HUD layout contract, after all older style layers. */
+.version-stamp,.build-info,.debug-launcher{display:none!important}
+#app #hud .context-action{display:none!important}
+#app #hud #interaction-prompt{
+ left:auto!important;right:18px!important;top:auto!important;bottom:300px!important;
+ transform:none!important;width:auto!important;max-width:236px!important;
+ min-height:38px!important;padding:8px 12px!important;font-size:13px!important;
+ border-radius:10px!important;text-align:left!important;pointer-events:none!important;
+ opacity:1;transition:opacity .35s ease;background:#0a293ae0!important;
+}
+#app #hud #interaction-prompt.hint-retired17{opacity:0!important;visibility:hidden!important}
+.touch-input #app #hud #interaction-prompt kbd{display:none!important}
+#app #hud .sea-navigation{
+ left:50%!important;right:auto!important;top:18px!important;bottom:auto!important;
+ transform:translateX(-50%)!important;width:clamp(230px,calc(var(--hud-width14) - 650px),350px)!important;
+ max-width:none!important;padding:9px 12px!important;box-sizing:border-box;
+ font-size:12px!important;line-height:1.35!important;pointer-events:none!important;
+}
+#app #hud .sea-navigation strong{display:block;font-size:14px!important;line-height:1.3}
+#app #hud .sea-navigation span{display:block;font-size:11px!important;margin-top:3px}
+#app #hud .hud-top-center:has(~ .sea-navigation:not([hidden])) #compass{visibility:hidden}
+#app #hud .harpoon-readout[data-state17="ready"]{display:none!important}
+#app #hud .toolbelt{z-index:35!important;pointer-events:auto!important;touch-action:manipulation}
+#app #hud .tool-slot{touch-action:manipulation!important;pointer-events:auto!important;user-select:none;-webkit-user-select:none}
+#app #hud .tool-slot.pending17{outline:2px solid #e8c470;outline-offset:2px}
+#app #hud .touch-controls{pointer-events:none!important}
+#app #hud .touch-look-zone,#app #hud .touch-move-zone,#app #hud .touch-button{pointer-events:auto!important}
+#app #hud .touch-button{touch-action:none;-webkit-tap-highlight-color:transparent;user-select:none}
+#app #hud .touch-button small{font-size:10px!important;line-height:1.15!important}
+#app #hud .touch-button.is-available17{border-color:#f5dd87!important;box-shadow:0 0 0 2px #d7b95866}
+#app #hud .touch-button--primary .touch-action-icon{pointer-events:none;width:44px!important;height:44px!important}
+#app #hud .touch-button--primary img{object-fit:contain}
+
+#game-panel .game-panel__inner>header.panel-title-hidden17{
+ position:absolute!important;width:1px!important;height:1px!important;min-height:0!important;
+ padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;
+ white-space:nowrap!important;border:0!important;
+}
+#game-panel .panel-nav17{display:flex;align-items:center;gap:10px;flex:0 0 auto;min-width:0;border-bottom:1px solid #a4b9aa33;margin-bottom:10px;padding-bottom:6px}
+#game-panel .panel-nav17 #panel-tabs{flex:1 1 auto;min-width:0;border:0!important;padding:2px 0!important;margin:0!important;scrollbar-width:none}
+#game-panel .panel-nav17 #panel-tabs::-webkit-scrollbar{display:none}
+#game-panel .panel-nav17 #panel-close{position:static!important;flex:0 0 48px!important;width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;margin:0!important}
+#game-panel #panel-content{flex:1 1 auto;min-height:0}
+#game-panel #panel-footer:empty{display:none!important}
+#game-panel #panel-footer{flex:0 0 auto;padding:8px 2px 0!important;min-height:0!important}
+
+/* Dialogue is a bottom dock, not a full-screen form. All words are retained. */
+.touch-input .story-scene{padding:8px 12px!important;align-items:flex-end!important;background:linear-gradient(0deg,#03141aaa,transparent 55%)!important}
+.touch-input .story-card{width:min(740px,88vw)!important;max-height:46dvh!important;padding:12px 16px!important;display:flex;flex-direction:column;overflow:hidden!important;border-radius:14px!important}
+.touch-input .story-card__head{gap:8px;flex-shrink:0}
+.touch-input .story-avatar{width:30px;height:30px;font-size:17px;flex:0 0 30px}
+.touch-input .story-card__head small{display:none}
+.touch-input .story-card__head strong{font-size:11px;letter-spacing:.07em}
+.touch-input .story-card h2{font-size:19px!important;line-height:1.2!important;margin:8px 0 6px!important;flex-shrink:0}
+.touch-input .story-card p{font-size:14px!important;line-height:1.42!important;overflow-y:auto;min-height:0;overscroll-behavior:contain}
+.touch-input .story-card__foot{margin-top:8px!important;gap:8px;flex-shrink:0}
+.touch-input .story-card__foot>small{display:none}
+.touch-input .story-next{min-width:128px!important;min-height:44px!important;padding:8px 16px!important;margin-left:auto;font-size:13px!important}
+.touch-input .story-gifts{display:none!important}
+.adventure-choice17{position:fixed;inset:0;z-index:180;display:grid;place-items:center;background:#041421cc;padding:16px}
+.adventure-choice17__card{background:#123d46;color:#eef1df;border:1px solid #d8be7c;max-width:540px;padding:24px;border-radius:18px}
+.adventure-choice17__card button{display:block;width:100%;min-height:48px;margin-top:12px;font-size:15px}
+@media(max-height:550px) and (min-width:621px){
+ .touch-input .story-card{max-height:47dvh!important;width:min(700px,87vw)!important;padding:8px 14px!important}
+ .touch-input .story-card__head{display:none}
+ .touch-input .story-card h2{font-size:17px!important;margin:0 0 4px!important}
+ .touch-input .story-card p{font-size:13px!important;line-height:1.35!important}
+ .touch-input .story-card__foot{margin-top:5px!important}
+}
+:root[data-layout14="compact"] #app #hud #interaction-prompt{bottom:274px!important;right:18px!important;max-width:200px!important;font-size:12px!important}
+:root[data-layout14="compact"] #app #hud .sea-navigation{top:14px!important;width:calc(var(--hud-width14) - 568px)!important;min-width:210px!important;max-width:330px!important;padding:8px 10px!important}
+:root[data-layout14="portrait"] #app #hud .sea-navigation{top:221px!important;left:10px!important;right:10px!important;transform:none!important;width:auto!important;max-width:none!important;padding:6px 10px!important}
+:root[data-layout14="portrait"] #app #hud .sea-navigation strong{font-size:13px!important}
+:root[data-layout14="portrait"] #app #hud .sea-navigation span{display:none!important}
+:root[data-layout14="portrait"] #app #hud #interaction-prompt{right:10px!important;bottom:285px!important;max-width:158px!important;font-size:12px!important}
+:root[data-layout14="portrait"] .touch-input .story-card{width:100%!important;max-height:45dvh!important}
+@media(max-width:620px){
+ #game-panel .game-panel__inner{padding:10px!important}
+ #game-panel .panel-nav17{gap:6px;margin-bottom:8px}
+ #game-panel .panel-nav17 #panel-close{flex-basis:44px!important;width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important}
+ #game-panel .panel-nav17 #panel-tabs button{min-height:44px!important;font-size:12px!important;gap:5px!important;padding:5px 8px!important}
+ .touch-input .story-card{width:100%!important}
+}
+@media(prefers-reduced-motion:reduce){#app #hud #interaction-prompt{transition:none}}
+
+body.story-active #hud{visibility:hidden!important}
+body.story-active #hud .main-menu-button{visibility:visible!important}
+.touch-input .story-next{width:auto!important;flex:0 0 auto!important}
+.premium-grid14{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))!important}
+.premium-card14{display:flex;flex-direction:column;align-items:center;gap:8px}
+.premium-card14 .primary-btn{margin-top:auto;min-height:46px;width:100%}
+.premium-description17{font-size:13px!important;line-height:1.4!important;margin:0 0 8px!important;text-align:center}
+.touch-input kbd{display:none!important}
+.touch-input .main-menu-button small{display:none!important}
+
+html:not([data-locale-ready17]) #loading-screen h1,html:not([data-locale-ready17]) #loading-status{visibility:hidden}
+
+/* Keep each caption anchored to its own button, never to the whole cluster. */
+.touch-input #app #hud .touch-button{position:relative!important;inset:auto!important}
+.touch-input #app #hud .touch-button--small>small{display:none!important}
+.touch-input #app #hud .touch-button--primary>small{left:2px!important;right:2px!important;bottom:5px!important;max-width:none!important;text-align:center}
+.touch-input #app #hud .touch-button--primary .touch-action-icon{transform:translateY(-5px)}
+/* Separate the area name from the experience line on compact touch HUDs. */
+.touch-input #app #hud .wallet-panel>div{height:26px!important;line-height:26px!important}
+.touch-input #app #hud .wallet-panel strong{font-size:23px!important;line-height:26px!important}
+.touch-input #app #hud .wallet-panel .coin-icon{width:26px!important;height:26px!important}
+.touch-input #app #hud .wallet-panel small{font-size:11px!important;line-height:12px!important;margin-top:2px!important}
+.touch-input #app #hud .rank-xp-panel>div{height:12px!important;line-height:12px!important}
+.touch-input #app #hud .rank-xp-panel strong{line-height:12px!important}
