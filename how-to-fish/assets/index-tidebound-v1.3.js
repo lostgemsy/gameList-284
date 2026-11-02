@@ -262,3 +262,5 @@ installEnhancement18(releaseContext);
 installShoreline19(releaseContext);
 installRefinement115(releaseContext);
 zr();
+
+;(()=>{const menu=document.getElementById('main-menu');if(!menu||document.getElementById('hoho-game-credit'))return;const credit=document.createElement('div');credit.id='hoho-game-credit';credit.textContent='Game uploaded by HOHO GAMES';credit.style.cssText='position:fixed;right:22px;bottom:16px;z-index:1000;padding:7px 11px;border:1px solid rgba(237,198,117,.35);border-radius:5px;background:rgba(5,25,35,.72);color:#edc675;font:600 11px/1.3 Arial,sans-serif;letter-spacing:1.2px;text-transform:uppercase;text-shadow:0 1px 4px #000;pointer-events:none;';menu.appendChild(credit);})();
