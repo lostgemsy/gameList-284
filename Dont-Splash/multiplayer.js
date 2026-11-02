@@ -13,7 +13,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"
 const css=document.createElement("style");
 css.textContent=`
 #dsmp{position:fixed;z-index:1001;inset:0;display:grid;place-items:center;background:#07101deF;color:#fff;font:700 15px Nunito,Arial}
-#dsmp.off{display:none!important}#dsmp .card{width:min(430px,calc(100vw - 30px));max-height:90vh;overflow:auto;background:#17263d;border:2px solid #52749c;border-radius:18px;padding:20px;box-shadow:0 20px 60px #000}
+#dsmp.off,#dsmp[hidden]{display:none!important}#dsmp .card{position:relative;width:min(430px,calc(100vw - 30px));max-height:90vh;overflow:auto;background:#17263d;border:2px solid #52749c;border-radius:18px;padding:20px;box-shadow:0 20px 60px #000}
 #dsmp h2{text-align:center;font:30px 'Luckiest Guy',cursive;margin:5px 0 16px}#dsmp input,#dsmp select{box-sizing:border-box;width:100%;padding:12px;margin:7px 0 12px;border-radius:8px;border:1px solid #526985;background:#091526;color:white}
 #dsmp button{border:0;border-radius:8px;padding:12px;margin:4px;background:#2675d8;color:white;font-weight:900;cursor:pointer}#dsmp .row{display:flex;gap:8px}#dsmp .row button{flex:1}#dsmp .green{background:#15965d}#dsmp .hint{font-size:13px;color:#bdcce0;min-height:18px}#dsmp .code{text-align:center;font-size:26px;letter-spacing:5px;color:#8ed5ff}
 #dsmp .chat{height:120px;overflow:auto;background:#091526;padding:8px;border-radius:8px;font-size:13px}#dsmp .swatches{display:flex;gap:8px}#dsmp .swatches button{width:30px;height:30px;padding:0;border:2px solid white;border-radius:50%}
@@ -23,8 +23,8 @@ css.textContent=`
 .dsmp-bubble{position:fixed;z-index:46;pointer-events:none;max-width:180px;background:#fff;color:#17263d;padding:6px 9px;border-radius:10px;font:700 12px Nunito,Arial;box-shadow:0 2px 8px #0008;transform:translate(-50%,-100%);overflow-wrap:anywhere}
 `;
 document.head.append(css);
-const panel=document.createElement("div");panel.id="dsmp";panel.className="off";
-panel.innerHTML=`<div class="card"><h2>ONLINE MULTIPLAYER</h2>
+const panel=document.createElement("div");panel.id="dsmp";panel.className="off";panel.hidden=true;
+panel.innerHTML=`<div class="card"><button id="ds-close-x" class="ds-close-x" type="button" aria-label="Close multiplayer">×</button><h2>ONLINE MULTIPLAYER</h2>
 <section id="ds-entry"><label>Username<input id="ds-name" maxlength="16" placeholder="Your name" autocomplete="nickname"></label>
 <div>Choose your character color</div><div class="swatches" id="ds-colors"><button data-c="#38a9ff" style="background:#38a9ff"></button><button data-c="#ff5555" style="background:#ff5555"></button><button data-c="#50d890" style="background:#50d890"></button><button data-c="#c58cff" style="background:#c58cff"></button><button data-c="#f4c542" style="background:#f4c542"></button></div>
 <div class="row"><button id="ds-create" class="green">CREATE ROOM</button><button id="ds-join">JOIN ROOM</button></div><input id="ds-code-in" maxlength="6" placeholder="Enter room code"><p class="hint" id="ds-hint">Create a room or enter your friend's code.</p></section>
@@ -35,9 +35,9 @@ panel.innerHTML=`<div class="card"><h2>ONLINE MULTIPLAYER</h2>
 <p class="hint">The host starts the same game world for everyone in this room.</p><div class="row"><button id="ds-close">CLOSE</button></div></div>`;
 document.body.append(panel);
 const controls=document.createElement("div");controls.id="dsmp-controls";const openBtn=document.createElement("button");openBtn.id="dsmp-open";openBtn.textContent="ONLINE";const chatBtn=document.createElement("button");chatBtn.id="dsmp-chat-open";chatBtn.textContent="CHAT";controls.append(openBtn,chatBtn);document.body.append(controls);
-function showEntry(){ $("ds-entry").hidden=false;$("ds-lobby").hidden=true;panel.classList.remove("off");}
-function showLobby(){ $("ds-entry").hidden=true;$("ds-lobby").hidden=false;$("ds-code").textContent=room;panel.classList.remove("off");}
-function closePanel(){panel.classList.add("off");}
+function showEntry(){ $("ds-entry").hidden=false;$("ds-lobby").hidden=true;panel.hidden=false;panel.classList.remove("off");}
+function showLobby(){ $("ds-entry").hidden=true;$("ds-lobby").hidden=false;$("ds-code").textContent=room;panel.hidden=false;panel.classList.remove("off");}
+function closePanel(){panel.classList.add("off");panel.hidden=true;}
 async function login(){if(!auth.currentUser)await signInAnonymously(auth);user=auth.currentUser;}
 function localPlayer(){return window.game?.players?.[0]||null;}
 function playerData(){const p=localPlayer();return {name:safeName($("ds-name").value),color:bodyColor,style:bodyStyle,x:p?.pos?.x||0,y:p?.pos?.y||0,z:p?.pos?.z||0,yaw:p?.yaw||0,updated:Date.now()};}
@@ -111,7 +111,7 @@ $("ds-colors").addEventListener("click",e=>{const b=e.target.closest("[data-c]")
 $("ds-style").addEventListener("change",e=>bodyStyle=e.target.value);
 $("ds-create").onclick=createRoom;$("ds-join").onclick=joinRoom;$("ds-start").onclick=startRoomGame;$("ds-leave").onclick=leaveRoom;
 $("ds-send").onclick=sendMessage;$("ds-msg").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage();});
-$("ds-close").onclick=closePanel;openBtn.onclick=()=>{if(room)showLobby();else showEntry();};chatBtn.onclick=()=>{if(room){showLobby();$("ds-msg").focus();}else showEntry();};
+$("ds-close").onclick=closePanel;$("ds-close-x").onclick=closePanel;openBtn.onclick=()=>{if(room)showLobby();else showEntry();};chatBtn.onclick=()=>{if(room){showLobby();$("ds-msg").focus();}else showEntry();};
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!panel.classList.contains("off"))closePanel();});
 render3DLabels();
 window.addEventListener("beforeunload",()=>{if(sendLoop)clearInterval(sendLoop);});
