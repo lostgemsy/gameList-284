@@ -32,6 +32,10 @@
     #dsmp .ds-close-x{position:absolute;top:9px;right:10px;width:42px;height:42px;padding:0;margin:0;border:2px solid #9bb9d8;border-radius:50%;background:#b72e3c;color:#fff;font:900 30px/1 Arial,sans-serif;display:grid;place-items:center;z-index:5;box-shadow:0 3px 0 #641923}
     #dsmp .ds-close-x:hover{background:#e04455;transform:scale(1.05)}
     #dsmp .card{padding-top:58px}
+    #mpXBtn{position:fixed;z-index:5000;top:16px;right:16px;width:58px;height:58px;padding:0;margin:0;border:3px solid #fff;border-radius:50%;background:#e23b4a;color:#fff;font:900 32px/1 Arial,sans-serif;cursor:pointer;pointer-events:auto;box-shadow:0 4px 0 #7a1520,0 10px 24px #000a;display:grid;place-items:center}
+    #mpXBtn:hover{filter:brightness(1.12);transform:scale(1.05)}
+    #mpXBtn:active{transform:translateY(2px);box-shadow:0 1px 0 #7a1520}
+    #mpXBtn:disabled{opacity:.7;cursor:wait}
   </style>
   <link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/assets/index-DIsvQiZr.css">
   <!-- GameMonetize SDK (interstitials). src/ads.js pauses + mutes on SDK_GAME_PAUSE, resumes on SDK_GAME_START. -->
@@ -56,6 +60,7 @@
 </head>
 <body>
   <canvas id="gl"></canvas>
+  <button id="mpXBtn" type="button" aria-label="Open multiplayer" title="Open multiplayer">X</button>
 
   <!-- Per-view HUD layers are created by JS inside #hud -->
   <div id="hud">
@@ -161,13 +166,17 @@
   <div id="flash"></div>
   <script type="module">
     const multiplayerButton = document.getElementById("multiplayerOpenBtn");
+    const xButton = document.getElementById("mpXBtn");
     let multiplayerModulePromise;
 
-    multiplayerButton.addEventListener("click", async () => {
-      multiplayerButton.disabled = true;
-      multiplayerButton.textContent = "LOADING MULTIPLAYER...";
+    async function openOnline() {
+      if (multiplayerButton) {
+        multiplayerButton.disabled = true;
+        multiplayerButton.textContent = "LOADING MULTIPLAYER...";
+      }
+      xButton.disabled = true;
       try {
-        multiplayerModulePromise ||= import("https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/multiplayer.js?v=20261101-fix2");
+        multiplayerModulePromise ||= import("https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/multiplayer.js?v=20261102-xbtn");
         const multiplayer = await multiplayerModulePromise;
         const open = multiplayer.openMultiplayer || multiplayer.default?.openMultiplayer;
         if (typeof open !== "function") throw new Error("The downloaded multiplayer.js does not export openMultiplayer(). Refresh the CDN copy and try again.");
@@ -177,11 +186,21 @@
         multiplayerButton.textContent = "MULTIPLAYER FAILED - TRY AGAIN";
         multiplayerModulePromise = null;
       } finally {
-        multiplayerButton.disabled = false;
-        if (multiplayerButton.textContent === "LOADING MULTIPLAYER...") {
-          multiplayerButton.textContent = "ONLINE MULTIPLAYER";
+        xButton.disabled = false;
+        if (multiplayerButton) {
+          multiplayerButton.disabled = false;
+          if (multiplayerButton.textContent === "LOADING MULTIPLAYER...") {
+            multiplayerButton.textContent = "ONLINE MULTIPLAYER";
+          }
         }
       }
+    }
+
+    multiplayerButton?.addEventListener("click", openOnline);
+    xButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      openOnline();
     });
   </script>
 </body>
