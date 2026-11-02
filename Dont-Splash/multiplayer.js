@@ -50,9 +50,9 @@ async function joinRoom(){
 }
 async function enterRoom(){
  if(playersOff)playersOff();if(chatOff)chatOff();if(metaOff)metaOff();
- playersOff=onValue(ref(db,"rooms/"+room+"/players"),s=>{const d=s.val()||{};const entries=Object.entries(d);$("ds-players").innerHTML=entries.map(([id,p])=>"<div>● <b style=\"color:"+safeColor(p.color)+"\">"+esc(p.name)+"</b> "+(id===user.uid?"(you)":"")+(p.host?" — HOST":"")+"</div>").join("");$("ds-roomhint").textContent=entries.length+" player(s) connected";syncRemote(d);});
- chatOff=onValue(ref(db,"rooms/"+room+"/chat"),s=>{const list=Object.entries(s.val()||{}).sort((a,b)=>(a[1].time||0)-(b[1].time||0)).slice(-35);$("ds-chat").innerHTML=list.map(([id,m])=>"<p><b>"+esc(m.name)+":</b> "+esc(m.text)+"</p>").join("");$("ds-chat").scrollTop=$("ds-chat").scrollHeight;const latest=list[list.length-1];if(latest){const m=latest[1],bubble=bubbles.get(m.uid);if(bubble){bubble.textContent=m.text;bubble.hidden=false;clearTimeout(bubble._hideTimer);bubble._hideTimer=setTimeout(()=>bubble.hidden=true,3500);}}});
- metaOff=onValue(ref(db,"rooms/"+room+"/meta"),s=>{const m=s.val()||{};if(m.started&&!roomStarted){roomStarted=true;sharedSeed=m.seed;sharedNow=m.now;sharedDiff=m.diff||"easy";startSynchronizedGame();closePanel();}});
+ playersOff=onValue(ref(db,"rooms/"+room+"/players"),s=>{const d=s.val()||{};const entries=Object.entries(d);$("ds-players").innerHTML=entries.map(([id,p])=>"<div>● <b style=\"color:"+safeColor(p.color)+"\">"+esc(p.name)+"</b> "+(id===user.uid?"(you)":"")+(p.host?" — HOST":"")+"</div>").join("");$("ds-roomhint").textContent=entries.length+" player(s) connected";syncRemote(d);},e=>{$("ds-roomhint").textContent="Firebase read blocked: "+e.message+" Check Realtime Database rules.";console.error("Firebase players listener error:",e);});
+ chatOff=onValue(ref(db,"rooms/"+room+"/chat"),s=>{const list=Object.entries(s.val()||{}).sort((a,b)=>(a[1].time||0)-(b[1].time||0)).slice(-35);$("ds-chat").innerHTML=list.map(([id,m])=>"<p><b>"+esc(m.name)+":</b> "+esc(m.text)+"</p>").join("");$("ds-chat").scrollTop=$("ds-chat").scrollHeight;const latest=list[list.length-1];if(latest){const m=latest[1],bubble=bubbles.get(m.uid);if(bubble){bubble.textContent=m.text;bubble.hidden=false;clearTimeout(bubble._hideTimer);bubble._hideTimer=setTimeout(()=>bubble.hidden=true,3500);}}},e=>{$("ds-roomhint").textContent="Firebase chat blocked: "+e.message+" Check Realtime Database rules.";console.error("Firebase chat listener error:",e);});
+ metaOff=onValue(ref(db,"rooms/"+room+"/meta"),s=>{const m=s.val()||{};if(m.started&&!roomStarted){roomStarted=true;sharedSeed=m.seed;sharedNow=m.now;sharedDiff=m.diff||"easy";startSynchronizedGame();closePanel();}},e=>{console.error("Firebase room listener error:",e);$("ds-roomhint").textContent="Firebase read blocked: "+e.message+" Check Realtime Database rules.";});
  if(sendLoop)clearInterval(sendLoop);sendLoop=setInterval(()=>{if(user&&room)update(ref(db,"rooms/"+room+"/players/"+user.uid),playerData()).catch(()=>{});},100);
  showLobby();$("ds-start").hidden=!host;
 }
@@ -122,3 +122,4 @@ export function openMultiplayer(){
   if(room)showLobby();
   else showEntry();
 }
+export default {openMultiplayer};
