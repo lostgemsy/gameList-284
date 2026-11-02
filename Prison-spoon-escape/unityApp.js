@@ -193,7 +193,7 @@ const unityApp = {
         const loadingBar = document.querySelector("#unity-loading-bar");
         const progressBarFull = document.querySelector("#unity-progress-bar-full");
 
-        const buildUrl = "Build";
+        const buildUrl = "https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@6756bb77615f29ae9dd313371199ff133ac00878/Prison-spoon-escape/Build";
         const loaderUrl = buildUrl + "/escape-from-prison-with-spoon_mobile.loader.js";
         const config = {
             arguments: [],
