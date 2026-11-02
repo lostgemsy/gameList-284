@@ -73,12 +73,12 @@ function syncRemote(data){
 function startSynchronizedGame(){
  const g=window.game;if(!g||!sharedSeed)return;
  if(g.state==="playing")return;
- g.mode="solo";g.diffKey=$("ds-diff")?.value||g.diffKey||"easy";
+ g.mode="solo";g.diffKey=sharedDiff;
  const originalNow=Date.now,originalRandom=Math.random;
  Date.now=()=>sharedNow;Math.random=()=>((sharedNow^sharedSeed)>>>0)/1e9;
  try{g.startRun();}finally{Date.now=originalNow;Math.random=originalRandom;}
  localStarted=true;
- const p=localPlayer();if(p){const list=Object.keys($("ds-players").children).length;const snap=p.pos.clone();snap.x+=(Math.random()-.5)*.6;p.spawn(snap,Math.PI);}
+ const p=localPlayer();if(p){let hash=0;for(const ch of user.uid)hash=(hash*31+ch.charCodeAt(0))|0;p.pos.x+=((Math.abs(hash)%5)-2)*1.25;}
 }
 async function startRoomGame(){
  if(!host||!room)return;
