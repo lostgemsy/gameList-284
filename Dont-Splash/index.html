@@ -16,7 +16,7 @@
     #overlay #menu:not(.hidden) { display:flex; visibility:visible; opacity:1; }
     #overlay .panel-screen.hidden { display:none !important; }
   </style>
-  <link rel="icon" href="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@c8c3341491d40a352213cfb6e60eac89904d36cb/Dont-Splash/logo.webp" type="image/webp" />
+  <link rel="icon" href="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/dontsplash.webp?v=20261102" type="image/webp" />
   
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -76,7 +76,7 @@
       </div>
       <div class="menu-wrap">
         <div class="menu-main">
-          <img class="logo" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@c8c3341491d40a352213cfb6e60eac89904d36cb/Dont-Splash/logo.webp" alt="DON'T SPLASH" draggable="false" />
+          <img class="logo" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/dontsplash.webp?v=20261102" alt="DON'T SPLASH" draggable="false" />
           <p class="tagline" data-i18n="tagline">Don't fall in. Don't make a sound. It hears you.</p>
           <button id="multiplayerOpenBtn" type="button">ONLINE MULTIPLAYER</button>
           <div class="play-row">
@@ -166,7 +166,7 @@
       multiplayerButton.disabled = true;
       multiplayerButton.textContent = "LOADING MULTIPLAYER...";
       try {
-        multiplayerModulePromise ||= import("https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@c8c3341491d40a352213cfb6e60eac89904d36cb/Dont-Splash/multiplayer.js");
+        multiplayerModulePromise ||= import("https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@8a7b6ae83e12bd1c1039f5ecf89a539230474963/Dont-Splash/multiplayer.js");
         const multiplayer = await multiplayerModulePromise;
         const open = multiplayer.openMultiplayer || multiplayer.default?.openMultiplayer;
         if (typeof open !== "function") throw new Error("The downloaded multiplayer.js does not export openMultiplayer(). Refresh the CDN copy and try again.");
