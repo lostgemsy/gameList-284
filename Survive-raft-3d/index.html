@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Survive-raft-3d/style.css"/>
 <!-- Yandex Games SDK -->
-<script src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/sdk.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/yandex-sdk.js"></script>
 <style>
         canvas:focus {
             outline: none;
@@ -42,19 +42,6 @@
 <div class="spinner"></div>
 </div>
 </div>
-<!-- Split-file merger: joins the numbered chunks before Unity requests the original asset URLs. -->
-<script>
-window.fileMergerConfig = {
-    files: [
-        { name: "Build/raft-yandex-games-2.1.6.data.br", parts: 4 },
-        { name: "Build/raft-yandex-games-2.1.6.wasm.br", parts: 2 }
-    ],
-    basePath: "https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Survive-raft-3d/",
-    debug: true
-};
-</script>
-<script src="https://cdn.jsdelivr.net/gh/bubbls/UGS-Assets@main/merge.js"></script>
-
 <!-- Additional body modules -->
 <script>
         const hideFullScreenButton = "";
@@ -62,10 +49,11 @@ window.fileMergerConfig = {
         const buildUrl = CDN_BASE + "/Build";
         const loaderUrl = buildUrl + "/raft-yandex-games-2.1.6.loader.js";
         const config = {
-            // merge.js intercepts these original URLs and supplies the joined chunk data.
-            dataUrl: buildUrl + "/raft-yandex-games-2.1.6.data.br",
-            frameworkUrl: buildUrl + "/raft-yandex-games-2.1.6.framework.js.br",
-            codeUrl: buildUrl + "/raft-yandex-games-2.1.6.wasm.br",
+            dataUrl: "",
+            frameworkUrl: "",
+            codeUrl: "",
+            // Assets are downloaded, joined (where split), and Brotli-decoded before Unity starts.
+            decompressionFallback: false,
 
         streamingAssetsUrl: CDN_BASE + "/StreamingAssets",
             companyName: "Treastone",
@@ -151,49 +139,46 @@ window.fileMergerConfig = {
             FocusGame();
         });
 
-        // merge.js joins the .part files. Unity's original .br URLs are intercepted
-        // here and the merged Brotli bytes are decompressed before Unity receives them.
-        const mergedFetch = window.fetch.bind(window);
-        let brotliApiPromise = null;
-
-        async function decompressMergedBrotli(response, mimeType) {
-            if (!response.ok) return response;
-
-            const compressedBytes = new Uint8Array(await response.arrayBuffer());
-            if (!brotliApiPromise) {
-                brotliApiPromise = import("https://cdn.jsdelivr.net/npm/brotli-wasm@3.0.1/index.web.js")
+        // Download split Unity files, join their chunks, and Brotli-decompress them.
+        let brotliPromise;
+        async function getBrotli() {
+            if (!brotliPromise) {
+                brotliPromise = import("https://cdn.jsdelivr.net/npm/brotli-wasm@3.0.1/index.web.js")
                     .then(module => module.default);
             }
-
-            const brotli = await brotliApiPromise;
-            const uncompressedBytes = brotli.decompress(compressedBytes);
-
-            return new Response(uncompressedBytes, {
-                status: 200,
-                statusText: "OK",
-                headers: {
-                    "Content-Type": mimeType,
-                    "Content-Length": String(uncompressedBytes.byteLength)
-                }
-            });
+            return brotliPromise;
         }
 
-        window.fetch = async function (input, options) {
-            const requestUrl = typeof input === "string" ? input : input.url;
-            const cleanUrl = String(requestUrl || "").split("?")[0];
+        async function fetchBytes(url) {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error("Missing file: " + url + " (HTTP " + response.status + ")");
+            }
+            return new Uint8Array(await response.arrayBuffer());
+        }
 
-            if (cleanUrl.endsWith("/raft-yandex-games-2.1.6.data.br")) {
-                const mergedResponse = await mergedFetch(input, options);
-                return decompressMergedBrotli(mergedResponse, "application/octet-stream");
+        async function loadBrotliFile(filename, partCount, mimeType) {
+            const buffers = [];
+            for (let i = 1; i <= partCount; i++) {
+                const suffix = partCount > 1 ? ".part" + i : "";
+                const url = buildUrl + "/" + filename + suffix;
+                buffers.push(fetchBytes(url));
             }
 
-            if (cleanUrl.endsWith("/raft-yandex-games-2.1.6.wasm.br")) {
-                const mergedResponse = await mergedFetch(input, options);
-                return decompressMergedBrotli(mergedResponse, "application/wasm");
+            const chunks = await Promise.all(buffers);
+            const totalLength = chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0);
+            const joined = new Uint8Array(totalLength);
+            let offset = 0;
+
+            for (const chunk of chunks) {
+                joined.set(chunk, offset);
+                offset += chunk.byteLength;
             }
 
-            return mergedFetch(input, options);
-        };
+            const brotli = await getBrotli();
+            const decoded = brotli.decompress(joined);
+            return URL.createObjectURL(new Blob([decoded], { type: mimeType }));
+        }
 
         const script = document.createElement("script");
         script.src = loaderUrl;
@@ -201,7 +186,16 @@ window.fileMergerConfig = {
             StartUnityInstance = async function () {
                 try {
                     spinner.style.display = "";
-                    await prepareChunkedUnityAssets();
+                    const [dataUrl, frameworkUrl, codeUrl] = await Promise.all([
+                        loadBrotliFile("raft-yandex-games-2.1.6.data.br", 4, "application/octet-stream"),
+                        loadBrotliFile("raft-yandex-games-2.1.6.framework.js.br", 1, "text/javascript"),
+                        loadBrotliFile("raft-yandex-games-2.1.6.wasm.br", 2, "application/wasm")
+                    ]);
+
+                    config.dataUrl = dataUrl;
+                    config.frameworkUrl = frameworkUrl;
+                    config.codeUrl = codeUrl;
+
                     createUnityInstance(canvas, config, (progress) => {
                     spinner.style.display = "none";
                     progressBarEmpty.style.display = "";
@@ -214,7 +208,7 @@ window.fileMergerConfig = {
                         console.error(message);
                     });
                 } catch (error) {
-                    console.error("Unable to prepare split Unity assets:", error);
+                    console.error("Unable to download or prepare Unity assets:", error);
                     spinner.style.display = "none";
                     const errorBox = document.createElement("div");
                     errorBox.style.cssText = "position:absolute;inset:0;display:grid;place-items:center;padding:24px;color:white;background:#171717;font:16px Arial;text-align:center;z-index:10";
