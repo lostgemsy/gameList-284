@@ -262,3 +262,6 @@ installEnhancement18(releaseContext);
 installShoreline19(releaseContext);
 installRefinement115(releaseContext);
 zr();
+
+
+;(()=>{const install=()=>{const menu=document.getElementById('main-menu');if(!menu)return false;let credit=document.getElementById('hoho-game-credit');if(!credit){credit=document.createElement('div');credit.id='hoho-game-credit';credit.textContent='Game uploaded by HOHO GAMES';credit.style.cssText='position:fixed!important;top:18px!important;right:22px!important;left:auto!important;bottom:auto!important;z-index:2147483647!important;display:block!important;visibility:visible!important;opacity:1!important;padding:9px 13px;border:1px solid rgba(237,198,117,.55);border-radius:6px;background:rgba(5,25,35,.88);color:#edc675;font:700 12px/1.3 Arial,sans-serif;letter-spacing:1.1px;text-transform:uppercase;text-shadow:0 1px 4px #000;pointer-events:none;box-sizing:border-box;';document.body.appendChild(credit);}const sync=()=>{credit.style.display=menu.classList.contains('hidden')?'none':'block';};sync();new MutationObserver(sync).observe(menu,{attributes:true,attributeFilter:['class']});return true;};if(!install()){const watcher=new MutationObserver(()=>{if(install())watcher.disconnect();});watcher.observe(document.documentElement,{childList:true,subtree:true});}})();
