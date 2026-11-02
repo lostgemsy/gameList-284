@@ -23,8 +23,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
   <script type="module" crossorigin="anonymous" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/assets/index-Dhww41g5.js"></script>
-  <script type="module" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/multiplayer.js"></script>
-  <style>#menu .play-row{display:none!important}#dsmp[hidden],#dsmp.off{display:none!important}</style>
+  <style>
+    #menu .play-row{display:none!important}
+    #dsmp[hidden],#dsmp.off{display:none!important}
+    #multiplayerOpenBtn{margin-top:14px;min-width:210px;padding:13px 22px;border:2px solid #8ed5ff;border-radius:12px;background:#1769b2;color:#fff;font:900 16px Nunito,Arial,sans-serif;cursor:pointer;box-shadow:0 5px 0 #0b345b,0 8px 18px #0006}
+    #multiplayerOpenBtn:hover{filter:brightness(1.15);transform:translateY(-1px)}
+    #multiplayerOpenBtn:active{transform:translateY(2px);box-shadow:0 2px 0 #0b345b}
+  </style>
   <link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/assets/index-DIsvQiZr.css">
   <!-- GameMonetize SDK (interstitials). src/ads.js pauses + mutes on SDK_GAME_PAUSE, resumes on SDK_GAME_START. -->
   <script type="text/javascript">
@@ -71,6 +76,7 @@
         <div class="menu-main">
           <img class="logo" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/logo.webp" alt="DON'T SPLASH" draggable="false" />
           <p class="tagline" data-i18n="tagline">Don't fall in. Don't make a sound. It hears you.</p>
+          <button id="multiplayerOpenBtn" type="button">ONLINE MULTIPLAYER</button>
           <div class="play-row">
             <button id="p1Btn" class="rbx-btn green"><span data-i18n="player1">1 PLAYER</span></button>
             <button id="p2Btn" class="rbx-btn blue"><span data-i18n="player2">2 PLAYERS</span></button>
@@ -150,5 +156,28 @@
   </div>
 
   <div id="flash"></div>
+  <script type="module">
+    const multiplayerButton = document.getElementById("multiplayerOpenBtn");
+    let multiplayerModulePromise;
+
+    multiplayerButton.addEventListener("click", async () => {
+      multiplayerButton.disabled = true;
+      multiplayerButton.textContent = "LOADING MULTIPLAYER...";
+      try {
+        multiplayerModulePromise ||= import("https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/multiplayer.js");
+        const multiplayer = await multiplayerModulePromise;
+        multiplayer.openMultiplayer();
+      } catch (error) {
+        console.error("Multiplayer failed to load:", error);
+        multiplayerButton.textContent = "MULTIPLAYER FAILED - TRY AGAIN";
+        multiplayerModulePromise = null;
+      } finally {
+        multiplayerButton.disabled = false;
+        if (multiplayerButton.textContent === "LOADING MULTIPLAYER...") {
+          multiplayerButton.textContent = "ONLINE MULTIPLAYER";
+        }
+      }
+    });
+  </script>
 </body>
 </html>
