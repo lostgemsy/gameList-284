@@ -42,6 +42,19 @@
 <div class="spinner"></div>
 </div>
 </div>
+<!-- Split-file merger: joins the numbered chunks before Unity requests the original asset URLs. -->
+<script>
+window.fileMergerConfig = {
+    files: [
+        { name: "Build/raft-yandex-games-2.1.6.data.br", parts: 4 },
+        { name: "Build/raft-yandex-games-2.1.6.wasm.br", parts: 2 }
+    ],
+    basePath: "https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Survive-raft-3d/",
+    debug: true
+};
+</script>
+<script src="https://cdn.jsdelivr.net/gh/bubbls/UGS-Assets@main/merge.js"></script>
+
 <!-- Additional body modules -->
 <script>
         const hideFullScreenButton = "";
@@ -49,10 +62,10 @@
         const buildUrl = CDN_BASE + "/Build";
         const loaderUrl = buildUrl + "/raft-yandex-games-2.1.6.loader.js";
         const config = {
-            // data/wasm are assembled from sub-20MB Brotli chunks before Unity starts.
-            dataUrl: "",
+            // merge.js intercepts these original URLs and supplies the joined chunk data.
+            dataUrl: buildUrl + "/raft-yandex-games-2.1.6.data.br",
             frameworkUrl: buildUrl + "/raft-yandex-games-2.1.6.framework.js.br",
-            codeUrl: "",
+            codeUrl: buildUrl + "/raft-yandex-games-2.1.6.wasm.br",
 
         streamingAssetsUrl: CDN_BASE + "/StreamingAssets",
             companyName: "Treastone",
@@ -138,63 +151,49 @@
             FocusGame();
         });
 
-        // Download each chunk, join the original Brotli stream, then decompress it.
-        // Unity receives normal uncompressed Blob URLs, so it does not need special server headers.
-        let chunkedAssetsReady = null;
-        let unityAssetUrls = [];
+        // merge.js joins the .part files. Unity's original .br URLs are intercepted
+        // here and the merged Brotli bytes are decompressed before Unity receives them.
+        const mergedFetch = window.fetch.bind(window);
+        let brotliApiPromise = null;
 
-        async function loadChunkedBrotli(baseName, partCount, mimeType) {
-            const parts = [];
-            let totalBytes = 0;
+        async function decompressMergedBrotli(response, mimeType) {
+            if (!response.ok) return response;
 
-            for (let i = 1; i <= partCount; i++) {
-                const url = buildUrl + "/" + baseName + ".part" + i;
-                const response = await fetch(url, { cache: "force-cache" });
-                if (!response.ok) {
-                    throw new Error("Chunk download failed (" + response.status + "): " + url);
+            const compressedBytes = new Uint8Array(await response.arrayBuffer());
+            if (!brotliApiPromise) {
+                brotliApiPromise = import("https://cdn.jsdelivr.net/npm/brotli-wasm@3.0.1/index.web.js")
+                    .then(module => module.default);
+            }
+
+            const brotli = await brotliApiPromise;
+            const uncompressedBytes = brotli.decompress(compressedBytes);
+
+            return new Response(uncompressedBytes, {
+                status: 200,
+                statusText: "OK",
+                headers: {
+                    "Content-Type": mimeType,
+                    "Content-Length": String(uncompressedBytes.byteLength)
                 }
-                const bytes = new Uint8Array(await response.arrayBuffer());
-                parts.push(bytes);
-                totalBytes += bytes.byteLength;
-                console.log("Downloaded " + baseName + " part " + i + "/" + partCount);
-            }
-
-            const compressed = new Uint8Array(totalBytes);
-            let offset = 0;
-            for (const part of parts) {
-                compressed.set(part, offset);
-                offset += part.byteLength;
-            }
-
-            const brotliModule = await import("https://cdn.jsdelivr.net/npm/brotli-wasm@3.0.1/index.web.js");
-            const brotli = await brotliModule.default;
-            if (!brotli || typeof brotli.decompress !== "function") {
-                throw new Error("Brotli decoder did not expose decompress().");
-            }
-
-            const uncompressed = brotli.decompress(compressed);
-            const blobUrl = URL.createObjectURL(new Blob([uncompressed], { type: mimeType }));
-            unityAssetUrls.push(blobUrl);
-            return blobUrl;
+            });
         }
 
-        function prepareChunkedUnityAssets() {
-            if (!chunkedAssetsReady) {
-                chunkedAssetsReady = Promise.all([
-                    loadChunkedBrotli("raft-yandex-games-2.1.6.data.br", 4, "application/octet-stream"),
-                    loadChunkedBrotli("raft-yandex-games-2.1.6.wasm.br", 2, "application/wasm")
-                ]).then(([dataUrl, codeUrl]) => {
-                    config.dataUrl = dataUrl;
-                    config.codeUrl = codeUrl;
-                    console.log("Unity data and WebAssembly files are ready.");
-                });
-            }
-            return chunkedAssetsReady;
-        }
+        window.fetch = async function (input, options) {
+            const requestUrl = typeof input === "string" ? input : input.url;
+            const cleanUrl = String(requestUrl || "").split("?")[0];
 
-        window.addEventListener("beforeunload", () => {
-            for (const url of unityAssetUrls) URL.revokeObjectURL(url);
-        });
+            if (cleanUrl.endsWith("/raft-yandex-games-2.1.6.data.br")) {
+                const mergedResponse = await mergedFetch(input, options);
+                return decompressMergedBrotli(mergedResponse, "application/octet-stream");
+            }
+
+            if (cleanUrl.endsWith("/raft-yandex-games-2.1.6.wasm.br")) {
+                const mergedResponse = await mergedFetch(input, options);
+                return decompressMergedBrotli(mergedResponse, "application/wasm");
+            }
+
+            return mergedFetch(input, options);
+        };
 
         const script = document.createElement("script");
         script.src = loaderUrl;
