@@ -18,7 +18,7 @@ var Module=typeof unityFramework!="undefined"?unityFramework:{};var readyPromise
  */
 Module.allocateString = function (text) {
     if (text === null || text === undefined) {
-        return 0; // null pointer — safe to pass to C# as IntPtr.Zero
+        return 0; // null pointer â€” safe to pass to C# as IntPtr.Zero
     }
     text = String(text); // coerce non-string values defensively
     const bufferSize = lengthBytesUTF8(text) + 1;
@@ -33,18 +33,18 @@ Module.allocateString = function (text) {
  * Supports every Unity WebGL version from 2022 through 6.3+ by probing the
  * available Emscripten runtime API in priority order:
  *
- *   1. getWasmTableEntry  — Unity 6 / Emscripten ≥ 3.1.44 (WebAssembly Table)
- *   2. wasmTable.get      — direct WebAssembly.Table access (global or Module)
- *   3. makeDynCall        — mid-range Emscripten (~3.1.x)
- *   4. dynCall            — classic Emscripten (Unity 2022–2023)
- *   5. Module.dynCall_*   — oldest Emscripten legacy path
+ *   1. getWasmTableEntry  â€” Unity 6 / Emscripten â‰¥ 3.1.44 (WebAssembly Table)
+ *   2. wasmTable.get      â€” direct WebAssembly.Table access (global or Module)
+ *   3. makeDynCall        â€” mid-range Emscripten (~3.1.x)
+ *   4. dynCall            â€” classic Emscripten (Unity 2022â€“2023)
+ *   5. Module.dynCall_*   â€” oldest Emscripten legacy path
  *
  * When the callback is a function pointer (number), any string arguments are
  * temporarily allocated in WASM memory and freed after the call, since dynCall
  * and WebAssembly Table calls only accept numeric (int/pointer) arguments.
  *
  * When the callback is a string (exported C function name), Module.ccall is
- * used instead — it handles string marshaling automatically.
+ * used instead â€” it handles string marshaling automatically.
  *
  * @param {number}          senderId  Prepended as the first argument.
  * @param {number|string}   callback  Function pointer or exported name.
@@ -52,15 +52,15 @@ Module.allocateString = function (text) {
  */
 Module.invokeMonoPCallback = function (senderId, callback, ...args) {
     try {
-        // ── Guard: missing or null callback ──────────────────────────
+        // â”€â”€ Guard: missing or null callback â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         if (callback === null || callback === undefined) {
             console.warn('invokeMonoPCallback: callback is null/undefined, skipping');
             return;
         }
-        // ── Coerce all arguments ─────────────────────────────────────
+        // â”€â”€ Coerce all arguments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // Prepend senderId, then normalise types:
-        //   boolean  → 0 | 1
-        //   null/undefined → 0
+        //   boolean  â†’ 0 | 1
+        //   null/undefined â†’ 0
         //   everything else kept as-is (number or string)
         const argsWithId = [senderId, ...args];
         const coercedArgs = argsWithId.map((value) => {
@@ -68,7 +68,7 @@ Module.invokeMonoPCallback = function (senderId, callback, ...args) {
             if (typeof value === 'boolean') return value ? 1 : 0;
             return value;
         });
-        // ── Branch: pointer-based callback vs. named export ──────────
+        // â”€â”€ Branch: pointer-based callback vs. named export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         const callbackIsPointer = (typeof callback === 'number');
         if (callbackIsPointer) {
             // Null function pointer guard (index 0 in WebAssembly Table is null).
@@ -88,10 +88,10 @@ Module.invokeMonoPCallback = function (senderId, callback, ...args) {
                 }
                 return value;
             });
-            // Signature for dynCall / makeDynCall: void + N × int
+            // Signature for dynCall / makeDynCall: void + N Ã— int
             const signature = 'v' + ptrArgs.map(() => 'i').join('');
             try {
-                // 1) Unity 6+ / Emscripten ≥ 3.1.44: getWasmTableEntry
+                // 1) Unity 6+ / Emscripten â‰¥ 3.1.44: getWasmTableEntry
                 //    Returns the raw WASM function; call with args only.
                 if (typeof getWasmTableEntry === 'function') {
                     const fn = getWasmTableEntry(callback);
@@ -113,7 +113,7 @@ Module.invokeMonoPCallback = function (senderId, callback, ...args) {
                     fn.apply(null, ptrArgs);
                     return;
                 }
-                // 3) makeDynCall — returns a trampoline: makeDynCall(sig)(ptr, ...args)
+                // 3) makeDynCall â€” returns a trampoline: makeDynCall(sig)(ptr, ...args)
                 const makeDynCallFn = (typeof makeDynCall === 'function')
                     ? makeDynCall
                     : (typeof Module.makeDynCall === 'function' ? Module.makeDynCall : null);
@@ -150,7 +150,7 @@ Module.invokeMonoPCallback = function (senderId, callback, ...args) {
                 }
             }
         } else if (typeof callback === 'string') {
-            // Named exported function — ccall handles string marshaling automatically.
+            // Named exported function â€” ccall handles string marshaling automatically.
             if (typeof Module.ccall !== 'function') {
                 throw new Error('Module.ccall is not available to invoke named callback "' + callback + '"');
             }
