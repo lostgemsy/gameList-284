@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
-  <script type="module" crossorigin="anonymous" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/assets/index-Dhww41g5.js"></script>
+  <script type="module" crossorigin="anonymous" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/assets/index-Dhww41g5.js?v=20261102b"></script>
   <style>
     #dsmp[hidden],#dsmp.off{display:none!important}
     #multiplayerOpenBtn{margin-top:14px;min-width:210px;padding:13px 22px;border:2px solid #8ed5ff;border-radius:12px;background:#1769b2;color:#fff;font:900 16px Nunito,Arial,sans-serif;cursor:pointer;box-shadow:0 5px 0 #0b345b,0 8px 18px #0006}
@@ -166,7 +166,7 @@
       multiplayerButton.disabled = true;
       multiplayerButton.textContent = "LOADING MULTIPLAYER...";
       try {
-        multiplayerModulePromise ||= import("https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/multiplayer.js?v=20261102-panelx");
+        multiplayerModulePromise ||= import("https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/multiplayer.js?v=20261102-loop");
         const multiplayer = await multiplayerModulePromise;
         const open = multiplayer.openMultiplayer || multiplayer.default?.openMultiplayer;
         if (typeof open !== "function") throw new Error("The downloaded multiplayer.js does not export openMultiplayer(). Refresh the CDN copy and try again.");
