@@ -330,13 +330,13 @@ function buildNetworkState(){
    sinkT:p.sinkT,collapsed:!!p.collapsed,collapseT:p.collapseT||0,glow:!!p.glow
   }:null).filter(Boolean),
   memory:w.memory?{
-   state:w.memory.state,cooldown:w.memory.cooldown,timer:w.memory.timer,
-   total:w.memory.total,lastTick:w.memory.lastTick,shownOnce:!!w.memory.shownOnce,
-   dingIdx:w.memory.dingIdx,dingTimer:w.memory.dingTimer
+   state:w.memory.state,cooldown:w.memory.cooldown,timer:Number(w.memory.timer)||0,
+   total:Number(w.memory.total)||0,lastTick:Number(w.memory.lastTick)||0,shownOnce:!!w.memory.shownOnce,
+   dingIdx:Number(w.memory.dingIdx)||0,dingTimer:Number(w.memory.dingTimer)||0
   }:null,
   crushing:w.crushing?{
-   active:!!w.crushing.active,timer:w.crushing.timer,openLane:w.crushing.openLane,
-   walls:(w.crushing.walls||[]).map(q=>({W:q.W,H:q.H,D:q.D,finalX:q.finalX,dir:q.dir,x:q.x,state:q.state,hold:q.hold}))
+   active:!!w.crushing.active,timer:Number(w.crushing.timer)||0,openLane:Number.isFinite(w.crushing.openLane)?w.crushing.openLane:-1,
+   walls:(w.crushing.walls||[]).map(q=>({W:Number(q.W)||0,H:Number(q.H)||0,D:Number(q.D)||0,finalX:Number(q.finalX)||0,dir:Number(q.dir)||0,x:Number(q.x)||0,state:q.state||"done",hold:Number(q.hold)||0}))
   }:null,
   door:w.door?{open:!!w.door.open,openT:w.door.openT}:null,
   found:(w.found||[]).slice()
