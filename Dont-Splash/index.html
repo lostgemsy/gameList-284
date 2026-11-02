@@ -24,11 +24,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
   <script type="module" crossorigin="anonymous" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/assets/index-Dhww41g5.js"></script>
   <style>
-    #menu .play-row{display:none!important}
     #dsmp[hidden],#dsmp.off{display:none!important}
     #multiplayerOpenBtn{margin-top:14px;min-width:210px;padding:13px 22px;border:2px solid #8ed5ff;border-radius:12px;background:#1769b2;color:#fff;font:900 16px Nunito,Arial,sans-serif;cursor:pointer;box-shadow:0 5px 0 #0b345b,0 8px 18px #0006}
     #multiplayerOpenBtn:hover{filter:brightness(1.15);transform:translateY(-1px)}
     #multiplayerOpenBtn:active{transform:translateY(2px);box-shadow:0 2px 0 #0b345b}
+    #menu .play-row{display:flex!important;gap:12px;justify-content:center;flex-wrap:wrap}
+    #dsmp .ds-close-x{position:absolute;top:9px;right:10px;width:42px;height:42px;padding:0;margin:0;border:2px solid #9bb9d8;border-radius:50%;background:#b72e3c;color:#fff;font:900 30px/1 Arial,sans-serif;display:grid;place-items:center;z-index:5;box-shadow:0 3px 0 #641923}
+    #dsmp .ds-close-x:hover{background:#e04455;transform:scale(1.05)}
+    #dsmp .card{padding-top:58px}
   </style>
   <link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/assets/index-DIsvQiZr.css">
   <!-- GameMonetize SDK (interstitials). src/ads.js pauses + mutes on SDK_GAME_PAUSE, resumes on SDK_GAME_START. -->
@@ -164,9 +167,11 @@
       multiplayerButton.disabled = true;
       multiplayerButton.textContent = "LOADING MULTIPLAYER...";
       try {
-        multiplayerModulePromise ||= import("https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/multiplayer.js");
+        multiplayerModulePromise ||= import("https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/multiplayer.js?v=20261101-fix2");
         const multiplayer = await multiplayerModulePromise;
-        multiplayer.openMultiplayer();
+        const open = multiplayer.openMultiplayer || multiplayer.default?.openMultiplayer;
+        if (typeof open !== "function") throw new Error("The downloaded multiplayer.js does not export openMultiplayer(). Refresh the CDN copy and try again.");
+        open();
       } catch (error) {
         console.error("Multiplayer failed to load:", error);
         multiplayerButton.textContent = "MULTIPLAYER FAILED - TRY AGAIN";
