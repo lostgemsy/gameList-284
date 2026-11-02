@@ -1,8 +1,9 @@
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {initializeApp,getApps,getApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import {getDatabase,ref,set,update,onValue,onDisconnect,push} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import {getDatabase,ref,set,update,onValue,onDisconnect,push,get} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
-const app=initializeApp({apiKey:"AIzaSyC_mWlv7NuLbedCxc99DL51OlT-V0F-Bog",authDomain:"multiplayer-code.firebaseapp.com",databaseURL:"https://multiplayer-code-default-rtdb.firebaseio.com",projectId:"multiplayer-code",storageBucket:"multiplayer-code.firebasestorage.app",messagingSenderId:"976456965612",appId:"1:976456965612:web:87755c7adde2f16639b4c9"});
+const firebaseConfig={apiKey:"AIzaSyC_mWlv7NuLbedCxc99DL51OlT-V0F-Bog",authDomain:"multiplayer-code.firebaseapp.com",databaseURL:"https://multiplayer-code-default-rtdb.firebaseio.com",projectId:"multiplayer-code",storageBucket:"multiplayer-code.firebasestorage.app",messagingSenderId:"976456965612",appId:"1:976456965612:web:87755c7adde2f16639b4c9"};
+const app=getApps().length?getApp():initializeApp(firebaseConfig);
 const auth=getAuth(app),db=getDatabase(app);
 let user=null,room="",host=false,playersOff=null,chatOff=null,metaOff=null,sendLoop=null,roomStarted=false,bodyColor="#38a9ff",bodyStyle="classic",localStarted=false,sharedSeed=0,sharedNow=0,sharedDiff="easy";
 const remote=new Map(),labels=new Map(),bubbles=new Map();
@@ -18,7 +19,6 @@ css.textContent=`
 #dsmp button{border:0;border-radius:8px;padding:12px;margin:4px;background:#2675d8;color:white;font-weight:900;cursor:pointer}#dsmp .row{display:flex;gap:8px}#dsmp .row button{flex:1}#dsmp .green{background:#15965d}#dsmp .hint{font-size:13px;color:#bdcce0;min-height:18px}#dsmp .code{text-align:center;font-size:26px;letter-spacing:5px;color:#8ed5ff}
 #dsmp .chat{height:120px;overflow:auto;background:#091526;padding:8px;border-radius:8px;font-size:13px}#dsmp .swatches{display:flex;gap:8px}#dsmp .swatches button{width:30px;height:30px;padding:0;border:2px solid white;border-radius:50%}
 #dsmp .players{background:#091526;padding:8px;border-radius:8px;margin:8px 0}
-#dsmp-controls{position:fixed;z-index:999;left:12px;top:12px;display:flex;gap:6px}#dsmp-open,#dsmp-chat-open{background:#14253c;color:#fff;border:1px solid #7aa4d1;border-radius:9px;padding:9px 12px;font:900 12px Nunito,Arial;letter-spacing:.5px;box-shadow:0 3px 12px #0008;cursor:pointer}
 .dsmp-name{position:fixed;z-index:45;pointer-events:none;color:white;font:bold 13px Nunito,Arial;text-shadow:0 2px 5px #000,0 0 8px #000;white-space:nowrap;transform:translate(-50%,-100%)}
 .dsmp-bubble{position:fixed;z-index:46;pointer-events:none;max-width:180px;background:#fff;color:#17263d;padding:6px 9px;border-radius:10px;font:700 12px Nunito,Arial;box-shadow:0 2px 8px #0008;transform:translate(-50%,-100%);overflow-wrap:anywhere}
 `;
@@ -34,7 +34,6 @@ panel.innerHTML=`<div class="card"><button id="ds-close-x" class="ds-close-x" ty
 <p class="hint" id="ds-roomhint">Waiting for host…</p><div class="row"><button id="ds-start" class="green">START GAME (HOST)</button><button id="ds-leave">LEAVE ROOM</button></div></section>
 <p class="hint">The host starts the same game world for everyone in this room.</p><div class="row"><button id="ds-close">CLOSE</button></div></div>`;
 document.body.append(panel);
-const controls=document.createElement("div");controls.id="dsmp-controls";const openBtn=document.createElement("button");openBtn.id="dsmp-open";openBtn.textContent="ONLINE";const chatBtn=document.createElement("button");chatBtn.id="dsmp-chat-open";chatBtn.textContent="CHAT";controls.append(openBtn,chatBtn);document.body.append(controls);
 function showEntry(){ $("ds-entry").hidden=false;$("ds-lobby").hidden=true;panel.hidden=false;panel.classList.remove("off");}
 function showLobby(){ $("ds-entry").hidden=true;$("ds-lobby").hidden=false;$("ds-code").textContent=room;panel.hidden=false;panel.classList.remove("off");}
 function closePanel(){panel.classList.add("off");panel.hidden=true;}
@@ -42,12 +41,12 @@ async function login(){if(!auth.currentUser)await signInAnonymously(auth);user=a
 function localPlayer(){return window.game?.players?.[0]||null;}
 function playerData(){const p=localPlayer();return {name:safeName($("ds-name").value),color:bodyColor,style:bodyStyle,x:p?.pos?.x||0,y:p?.pos?.y||0,z:p?.pos?.z||0,yaw:p?.yaw||0,updated:Date.now()};}
 async function createRoom(){
- try{await login();let exists=true;for(let n=0;n<5&&exists;n++){room=Math.random().toString(36).slice(2,8).toUpperCase();const snap=await new Promise(ok=>onValue(ref(db,"rooms/"+room),ok,{onlyOnce:true}));exists=snap.exists();}if(exists)throw Error("Could not reserve a room code. Try again.");host=true;await set(ref(db,"rooms/"+room+"/meta"),{host:user.uid,created:Date.now(),started:false});await set(ref(db,"rooms/"+room+"/players/"+user.uid),{...playerData(),host:true});await onDisconnect(ref(db,"rooms/"+room+"/players/"+user.uid)).remove();await enterRoom();}
- catch(e){$("ds-hint").textContent="Could not create room: "+e.message;}
+ try{await login();let exists=true;for(let n=0;n<5&&exists;n++){room=Math.random().toString(36).slice(2,8).toUpperCase();const snap=await get(ref(db,"rooms/"+room));exists=snap.exists();}if(exists)throw Error("Could not reserve a room code. Try again.");host=true;await set(ref(db,"rooms/"+room+"/meta"),{host:user.uid,created:Date.now(),started:false});await set(ref(db,"rooms/"+room+"/players/"+user.uid),{...playerData(),host:true});await onDisconnect(ref(db,"rooms/"+room+"/players/"+user.uid)).remove();await enterRoom();}
+ catch(e){console.error("Firebase create-room error:",e);$("ds-hint").textContent="Could not create room: "+(e.code==="auth/admin-restricted-operation"?"Enable Anonymous sign-in in Firebase Authentication.":e.message);}
 }
 async function joinRoom(){
- try{await login();room=$("ds-code-in").value.trim().toUpperCase();if(!/^[A-Z0-9]{6}$/.test(room))throw Error("Enter a valid 6-character room code.");const s=await new Promise(ok=>onValue(ref(db,"rooms/"+room),ok,{onlyOnce:true}));if(!s.exists())throw Error("Room not found.");const ps=s.child("players").val()||{};if(Object.keys(ps).length>=4&&!ps[user.uid])throw Error("Room is full (4 players maximum).");host=false;await set(ref(db,"rooms/"+room+"/players/"+user.uid),{...playerData(),host:false});await onDisconnect(ref(db,"rooms/"+room+"/players/"+user.uid)).remove();await enterRoom();}
- catch(e){$("ds-hint").textContent=e.message;}
+ try{await login();room=$("ds-code-in").value.trim().toUpperCase();if(!/^[A-Z0-9]{6}$/.test(room))throw Error("Enter a valid 6-character room code.");const s=await get(ref(db,"rooms/"+room));if(!s.exists())throw Error("Room not found.");const ps=s.child("players").val()||{};if(Object.keys(ps).length>=4&&!ps[user.uid])throw Error("Room is full (4 players maximum).");host=false;await set(ref(db,"rooms/"+room+"/players/"+user.uid),{...playerData(),host:false});await onDisconnect(ref(db,"rooms/"+room+"/players/"+user.uid)).remove();await enterRoom();}
+ catch(e){console.error("Firebase join-room error:",e);$("ds-hint").textContent=e.code==="auth/admin-restricted-operation"?"Enable Anonymous sign-in in Firebase Authentication.":e.message;}
 }
 async function enterRoom(){
  if(playersOff)playersOff();if(chatOff)chatOff();if(metaOff)metaOff();
@@ -106,12 +105,20 @@ function leaveRoom(){
  for(const [id,a] of remote){window.game?.scene?.remove(a.root);a.parts.forEach(m=>{m.geometry.dispose();m.material.dispose();});labels.get(id)?.remove();bubbles.get(id)?.remove();}
  remote.clear();labels.clear();bubbles.clear();room="";host=false;roomStarted=false;localStarted=false;showEntry();
 }
-function showEntry(){$("ds-entry").hidden=false;$("ds-lobby").hidden=true;panel.classList.remove("off");}
 $("ds-colors").addEventListener("click",e=>{const b=e.target.closest("[data-c]");if(b)bodyColor=b.dataset.c;});
 $("ds-style").addEventListener("change",e=>bodyStyle=e.target.value);
-$("ds-create").onclick=createRoom;$("ds-join").onclick=joinRoom;$("ds-start").onclick=startRoomGame;$("ds-leave").onclick=leaveRoom;
-$("ds-send").onclick=sendMessage;$("ds-msg").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage();});
-$("ds-close").onclick=closePanel;$("ds-close-x").onclick=closePanel;openBtn.onclick=()=>{if(room)showLobby();else showEntry();};chatBtn.onclick=()=>{if(room){showLobby();$("ds-msg").focus();}else showEntry();};
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!panel.classList.contains("off"))closePanel();});
+$("ds-create").onclick=createRoom;
+$("ds-join").onclick=joinRoom;
+$("ds-start").onclick=startRoomGame;
+$("ds-leave").onclick=leaveRoom;
+$("ds-send").onclick=sendMessage;
+$("ds-msg").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage();});
+$("ds-close").onclick=closePanel;
+$("ds-close-x").onclick=closePanel;
 render3DLabels();
 window.addEventListener("beforeunload",()=>{if(sendLoop)clearInterval(sendLoop);});
+
+export function openMultiplayer(){
+  if(room)showLobby();
+  else showEntry();
+}
