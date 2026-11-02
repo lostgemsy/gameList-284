@@ -16,13 +16,13 @@
     #overlay #menu:not(.hidden) { display:flex; visibility:visible; opacity:1; }
     #overlay .panel-screen.hidden { display:none !important; }
   </style>
-  <link rel="icon" href="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/logo.webp" type="image/webp" />
+  <link rel="icon" href="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@c8c3341491d40a352213cfb6e60eac89904d36cb/Dont-Splash/logo.webp" type="image/webp" />
   
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
-  <script type="module" crossorigin="anonymous" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/assets/index-Dhww41g5.js?v=20261102b"></script>
+  <script type="module" crossorigin="anonymous" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@c8c3341491d40a352213cfb6e60eac89904d36cb/Dont-Splash/assets/index-Dhww41g5.js?v=20261102b"></script>
   <style>
     #dsmp[hidden],#dsmp.off{display:none!important}
     #multiplayerOpenBtn{margin-top:14px;min-width:210px;padding:13px 22px;border:2px solid #8ed5ff;border-radius:12px;background:#1769b2;color:#fff;font:900 16px Nunito,Arial,sans-serif;cursor:pointer;box-shadow:0 5px 0 #0b345b,0 8px 18px #0006}
@@ -33,7 +33,7 @@
     #dsmp .ds-close-x:hover{background:#e04455;transform:scale(1.05)}
     #dsmp .card{padding-top:58px}
   </style>
-  <link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/assets/index-DIsvQiZr.css">
+  <link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@c8c3341491d40a352213cfb6e60eac89904d36cb/Dont-Splash/assets/index-DIsvQiZr.css">
   <!-- GameMonetize SDK (interstitials). src/ads.js pauses + mutes on SDK_GAME_PAUSE, resumes on SDK_GAME_START. -->
   <script type="text/javascript">
     window.SDK_OPTIONS = {
@@ -76,7 +76,7 @@
       </div>
       <div class="menu-wrap">
         <div class="menu-main">
-          <img class="logo" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/logo.webp" alt="DON'T SPLASH" draggable="false" />
+          <img class="logo" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@c8c3341491d40a352213cfb6e60eac89904d36cb/Dont-Splash/logo.webp" alt="DON'T SPLASH" draggable="false" />
           <p class="tagline" data-i18n="tagline">Don't fall in. Don't make a sound. It hears you.</p>
           <button id="multiplayerOpenBtn" type="button">ONLINE MULTIPLAYER</button>
           <div class="play-row">
@@ -90,7 +90,7 @@
           </div>
           <div class="hint" id="diffHint"></div>
           <a id="meyaLink" class="meya" href="https://meyagames.com/?utm_source=dont-splash&utm_medium=game&utm_campaign=main_menu&utm_content=logo" target="_blank" rel="noopener">
-            <img src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/meya-logo.webp" alt="MeyaGames" draggable="false" />
+            <img src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@c8c3341491d40a352213cfb6e60eac89904d36cb/Dont-Splash/meya-logo.webp" alt="MeyaGames" draggable="false" />
           </a>
         </div>
       </div>
@@ -166,7 +166,7 @@
       multiplayerButton.disabled = true;
       multiplayerButton.textContent = "LOADING MULTIPLAYER...";
       try {
-        multiplayerModulePromise ||= import("https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/multiplayer.js?v=20261102-loop");
+        multiplayerModulePromise ||= import("https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@c8c3341491d40a352213cfb6e60eac89904d36cb/Dont-Splash/multiplayer.js");
         const multiplayer = await multiplayerModulePromise;
         const open = multiplayer.openMultiplayer || multiplayer.default?.openMultiplayer;
         if (typeof open !== "function") throw new Error("The downloaded multiplayer.js does not export openMultiplayer(). Refresh the CDN copy and try again.");
