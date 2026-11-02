@@ -13,7 +13,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"
 const css=document.createElement("style");
 css.textContent=`
 #dsmp{position:fixed;z-index:1001;inset:0;display:grid;place-items:center;background:#07101deF;color:#fff;font:700 15px Nunito,Arial}
-#dsmp.off{display:none}#dsmp .card{width:min(430px,calc(100vw - 30px));max-height:90vh;overflow:auto;background:#17263d;border:2px solid #52749c;border-radius:18px;padding:20px;box-shadow:0 20px 60px #000}
+#dsmp.off{display:none!important}#dsmp .card{width:min(430px,calc(100vw - 30px));max-height:90vh;overflow:auto;background:#17263d;border:2px solid #52749c;border-radius:18px;padding:20px;box-shadow:0 20px 60px #000}
 #dsmp h2{text-align:center;font:30px 'Luckiest Guy',cursive;margin:5px 0 16px}#dsmp input,#dsmp select{box-sizing:border-box;width:100%;padding:12px;margin:7px 0 12px;border-radius:8px;border:1px solid #526985;background:#091526;color:white}
 #dsmp button{border:0;border-radius:8px;padding:12px;margin:4px;background:#2675d8;color:white;font-weight:900;cursor:pointer}#dsmp .row{display:flex;gap:8px}#dsmp .row button{flex:1}#dsmp .green{background:#15965d}#dsmp .hint{font-size:13px;color:#bdcce0;min-height:18px}#dsmp .code{text-align:center;font-size:26px;letter-spacing:5px;color:#8ed5ff}
 #dsmp .chat{height:120px;overflow:auto;background:#091526;padding:8px;border-radius:8px;font-size:13px}#dsmp .swatches{display:flex;gap:8px}#dsmp .swatches button{width:30px;height:30px;padding:0;border:2px solid white;border-radius:50%}
