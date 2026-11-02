@@ -105,6 +105,8 @@ function renderPlayers(){
  ).join("")||"Waiting for players…";
  $("ds-roomhint").textContent=entries.length+" / 4 players connected"+(entries.length<2?" — waiting for your friend":"");
  syncRemotePlayers(merged);
+ const hostState=Object.entries(merged).find(([id,p])=>p.host&&p.gameState);
+ if(!host&&roomStarted&&hostState){latestNetworkState=hostState[1].gameState;applyNetworkState(latestNetworkState);}
 }
 function createRoomCode(){
  const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -164,7 +166,6 @@ async function enterRoom(){
  if(presenceOff)presenceOff();
  if(chatOff)chatOff();
  if(metaOff)metaOff();
- if(stateOff)stateOff();
  if(sendLoop)clearInterval(sendLoop);
  playersSnapshot={};
  presenceSnapshot={};
@@ -205,22 +206,13 @@ async function enterRoom(){
    startSynchronizedGame(meta);
   }
  },e=>{$("ds-roomhint").textContent="Firebase room error: "+e.message;console.error(e);});
- stateOff=onValue(ref(db,roomPath("state")),snap=>{
-  const state=snap.val();
-  if(state){
-   latestNetworkState=state;
-   if(!host&&roomStarted)applyNetworkState(state);
-  }
- },e=>{$("ds-roomhint").textContent="Firebase game sync error: "+e.message;console.error(e);});
  sendLoop=setInterval(()=>{
   if(!user||!room)return;
   const data=playerData();
+  const g=window.game;
+  if(host&&roomStarted&&g&&g.state==="playing")data.gameState=buildNetworkState();
   update(ref(db,roomPath("players/"+user.uid)),data).catch(e=>console.warn("Player heartbeat failed:",e));
   update(ref(db,roomPath("presence/"+user.uid)),data).catch(()=>{});
-  const g=window.game;
-  if(host&&roomStarted&&g&&g.state==="playing"){
-   set(ref(db,roomPath("state")),buildNetworkState()).catch(e=>console.error("Game state broadcast failed:",e));
-  }
  },100);
  showLobby();
  $("ds-start").hidden=!host;
@@ -559,7 +551,7 @@ function leaveRoom(){
   set(ref(db,roomPath("players/"+user.uid)),null).catch(()=>{});
   set(ref(db,roomPath("presence/"+user.uid)),null).catch(()=>{});
  }
- playersOff?.();presenceOff?.();chatOff?.();metaOff?.();stateOff?.();
+ playersOff?.();presenceOff?.();chatOff?.();metaOff?.();
  if(sendLoop)clearInterval(sendLoop);
  for(const [id,a] of remote){
   window.game?.scene?.remove(a.root);
