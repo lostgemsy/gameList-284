@@ -90,7 +90,8 @@ async function sendMessage(){
  const bubble=bubbles.get(user.uid);if(bubble){bubble.textContent=text;bubble.hidden=false;setTimeout(()=>bubble.hidden=true,3500);}
 }
 function render3DLabels(){
- const g=window.game,p=localPlayer();if(!g?.scene||!p?.camera)return;
+ const g=window.game,p=localPlayer();
+ if(!g?.scene||!p?.camera){requestAnimationFrame(render3DLabels);return;}
  for(const [id,a] of remote){const t=a.target;a.root.position.lerp(new a.root.position.constructor(t.x,t.y,t.z),.32);a.root.rotation.y=t.yaw;
  const v=new p.camera.position.constructor(t.x,t.y+2.15,t.z).project(p.camera),tag=labels.get(id),bubble=bubbles.get(id);
  const x=(v.x*.5+.5)*innerWidth,y=(-v.y*.5+.5)*innerHeight,visible=v.z<1&&v.z>-1;
