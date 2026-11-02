@@ -1,10 +1,10 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import {getDatabase,ref,set,update,onValue,onDisconnect,push,runTransaction} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import {getDatabase,ref,set,update,onValue,onDisconnect,push} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
 const app=initializeApp({apiKey:"AIzaSyC_mWlv7NuLbedCxc99DL51OlT-V0F-Bog",authDomain:"multiplayer-code.firebaseapp.com",databaseURL:"https://multiplayer-code-default-rtdb.firebaseio.com",projectId:"multiplayer-code",storageBucket:"multiplayer-code.firebasestorage.app",messagingSenderId:"976456965612",appId:"1:976456965612:web:87755c7adde2f16639b4c9"});
 const auth=getAuth(app),db=getDatabase(app);
-let user=null,room="",host=false,roomOff=null,playersOff=null,chatOff=null,metaOff=null,sendLoop=null,roomStarted=false,bodyColor="#38a9ff",bodyStyle="classic",localStarted=false,sharedSeed=0,sharedNow=0;
+let user=null,room="",host=false,playersOff=null,chatOff=null,metaOff=null,sendLoop=null,roomStarted=false,bodyColor="#38a9ff",bodyStyle="classic",localStarted=false,sharedSeed=0,sharedNow=0,sharedDiff="easy";
 const remote=new Map(),labels=new Map(),bubbles=new Map();
 const $=id=>document.getElementById(id);
 const safeName=s=>String(s||"Player").replace(/[^a-z0-9 _-]/gi,"").trim().slice(0,16)||"Player";
@@ -42,7 +42,7 @@ async function login(){if(!auth.currentUser)await signInAnonymously(auth);user=a
 function localPlayer(){return window.game?.players?.[0]||null;}
 function playerData(){const p=localPlayer();return {name:safeName($("ds-name").value),color:bodyColor,style:bodyStyle,x:p?.pos?.x||0,y:p?.pos?.y||0,z:p?.pos?.z||0,yaw:p?.yaw||0,updated:Date.now()};}
 async function createRoom(){
- try{await login();room=Math.random().toString(36).slice(2,8).toUpperCase();const rr=ref(db,"rooms/"+room);const result=await runTransaction(rr,v=>v===null?{meta:{host:user.uid,created:Date.now(),started:false},players:{}}:undefined);if(!result.committed){$("ds-hint").textContent="Please try creating the room again.";return;}host=true;await set(ref(db,"rooms/"+room+"/players/"+user.uid),{...playerData(),host:true});await onDisconnect(ref(db,"rooms/"+room+"/players/"+user.uid)).remove();await enterRoom();}
+ try{await login();let exists=true;for(let n=0;n<5&&exists;n++){room=Math.random().toString(36).slice(2,8).toUpperCase();const snap=await new Promise(ok=>onValue(ref(db,"rooms/"+room),ok,{onlyOnce:true}));exists=snap.exists();}if(exists)throw Error("Could not reserve a room code. Try again.");host=true;await set(ref(db,"rooms/"+room+"/meta"),{host:user.uid,created:Date.now(),started:false});await set(ref(db,"rooms/"+room+"/players/"+user.uid),{...playerData(),host:true});await onDisconnect(ref(db,"rooms/"+room+"/players/"+user.uid)).remove();await enterRoom();}
  catch(e){$("ds-hint").textContent="Could not create room: "+e.message;}
 }
 async function joinRoom(){
@@ -53,14 +53,14 @@ async function enterRoom(){
  if(playersOff)playersOff();if(chatOff)chatOff();if(metaOff)metaOff();
  playersOff=onValue(ref(db,"rooms/"+room+"/players"),s=>{const d=s.val()||{};const entries=Object.entries(d);$("ds-players").innerHTML=entries.map(([id,p])=>"<div>● <b style=\"color:"+safeColor(p.color)+"\">"+esc(p.name)+"</b> "+(id===user.uid?"(you)":"")+(p.host?" — HOST":"")+"</div>").join("");$("ds-roomhint").textContent=entries.length+" player(s) connected";syncRemote(d);});
  chatOff=onValue(ref(db,"rooms/"+room+"/chat"),s=>{const list=Object.values(s.val()||{}).sort((a,b)=>(a.time||0)-(b.time||0)).slice(-35);$("ds-chat").innerHTML=list.map(m=>"<p><b>"+esc(m.name)+":</b> "+esc(m.text)+"</p>").join("");$("ds-chat").scrollTop=$("ds-chat").scrollHeight;});
- metaOff=onValue(ref(db,"rooms/"+room+"/meta"),s=>{const m=s.val()||{};if(m.started&&!roomStarted){roomStarted=true;sharedSeed=m.seed;sharedNow=m.now;bodyStyle=$("ds-style").value;startSynchronizedGame();closePanel();}});
+ metaOff=onValue(ref(db,"rooms/"+room+"/meta"),s=>{const m=s.val()||{};if(m.started&&!roomStarted){roomStarted=true;sharedSeed=m.seed;sharedNow=m.now;sharedDiff=m.diff||"easy";startSynchronizedGame();closePanel();}});
  if(sendLoop)clearInterval(sendLoop);sendLoop=setInterval(()=>{if(user&&room)update(ref(db,"rooms/"+room+"/players/"+user.uid),playerData()).catch(()=>{});},100);
  showLobby();$("ds-start").hidden=!host;
 }
-function getThree(){const g=window.game;if(!g?.scene)return null;let sample=null;g.scene.traverse(o=>{if(!sample&&o.isMesh&&o.geometry&&o.material)sample=o;});if(!sample)return null;return {scene:g.scene,Mesh:sample.constructor,Geometry:sample.geometry.constructor,Material:sample.material.constructor};}
+function getThree(){const g=window.game;if(!g?.scene)return null;let sample=null;g.scene.traverse(o=>{if(!sample&&o.isMesh&&o.geometry&&o.material)sample=o;});if(!sample)return null;return {scene:g.scene,Mesh:sample.constructor,Geometry:sample.geometry.constructor,Attribute:sample.geometry.attributes.position.constructor,Material:sample.material.constructor,sourceMaterial:sample.material};}
 function createAvatar(id,p){
  const T=getThree();if(!T)return null;const root=new T.scene.constructor();const col=safeColor(p.color),tall=p.style==="tall",round=p.style==="round",h=tall?1.05:.82,parts=[];
- function piece(color,scale,pos){const geo=new T.Geometry(1,1,8);geo.scale(...scale);const mat=new T.Material({color,roughness:.8});const mesh=new T.Mesh(geo,mat);mesh.position.set(...pos);mesh.castShadow=true;mesh.receiveShadow=true;root.add(mesh);parts.push(mesh);}
+ function piece(color,scale,pos){const geo=new T.Geometry();const v=[];const faces=[[[0,0,1],[1,0,1],[1,1,1],[0,0,1],[1,1,1],[0,1,1]],[[0,0,0],[0,1,0],[1,1,0],[0,0,0],[1,1,0],[1,0,0]],[[0,0,0],[0,0,1],[0,1,1],[0,0,0],[0,1,1],[0,1,0]],[[1,0,0],[1,1,0],[1,1,1],[1,0,0],[1,1,1],[1,0,1]],[[0,1,0],[0,1,1],[1,1,1],[0,1,0],[1,1,1],[1,1,0]],[[0,0,0],[1,0,0],[1,0,1],[0,0,0],[1,0,1],[0,0,1]]];for(const face of faces)for(const q of face)v.push((q[0]-.5)*scale[0],(q[1]-.5)*scale[1],(q[2]-.5)*scale[2]);geo.setAttribute("position",new T.Attribute(new Float32Array(v),3));geo.computeVertexNormals();const mat=T.sourceMaterial.clone();if(mat.color)mat.color.set(color);if("roughness" in mat)mat.roughness=.8;const mesh=new T.Mesh(geo,mat);mesh.position.set(...pos);mesh.castShadow=true;mesh.receiveShadow=true;root.add(mesh);parts.push(mesh);}
  piece(col,round?[.48,.52,.32]:[.32,tall?.78:.56,.25],[0,h,0]);piece("#f0c7a0",[.23,.23,.23],[0,tall?1.86:1.52,0]);piece(col,[.12,.45,.12],[-.42,h,0]);piece(col,[.12,.45,.12],[.42,h,0]);piece("#263448",[.14,.46,.15],[-.17,.25,0]);piece("#263448",[.14,.46,.15],[.17,.25,0]);
  T.scene.add(root);const tag=document.createElement("div");tag.className="dsmp-name";tag.textContent=safeName(p.name);document.body.append(tag);labels.set(id,tag);
  const bubble=document.createElement("div");bubble.className="dsmp-bubble";bubble.hidden=true;document.body.append(bubble);bubbles.set(id,bubble);
