@@ -1,192 +1,535 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>DON'T SPLASH</title>
-  <meta name="theme-color" content="#101827">
-  <meta name="description" content="Don't fall in. Don't make a sound. It hears you.">
-  <meta name="color-scheme" content="dark">
-  <style>
-    html, body { width:100%; height:100%; margin:0; overflow:hidden; }
-    canvas#gl { position:fixed; inset:0; z-index:0; display:block; }
-    #hud { position:fixed; inset:0; z-index:20; pointer-events:none; }
-    #overlay { position:fixed; inset:0; z-index:10; pointer-events:none; visibility:visible; opacity:1; }
-    #overlay .panel-screen { position:absolute; inset:0; pointer-events:auto; }
-    #overlay #menu:not(.hidden) { display:flex; visibility:visible; opacity:1; }
-    #overlay .panel-screen.hidden { display:none !important; }
-  </style>
-  <link rel="icon" href="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/dontsplash.webp?v=20261103f" type="image/webp" />
-  
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
-  <script type="module" crossorigin="anonymous" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@c8c3341491d40a352213cfb6e60eac89904d36cb/Dont-Splash/assets/index-Dhww41g5.js?v=20261102b"></script>
-  <style>
-    #dsmp[hidden],#dsmp.off{display:none!important}
-    #multiplayerOpenBtn{margin-top:14px;min-width:210px;padding:13px 22px;border:2px solid #8ed5ff;border-radius:12px;background:#1769b2;color:#fff;font:900 16px Nunito,Arial,sans-serif;cursor:pointer;box-shadow:0 5px 0 #0b345b,0 8px 18px #0006}
-    #multiplayerOpenBtn:hover{filter:brightness(1.15);transform:translateY(-1px)}
-    #multiplayerOpenBtn:active{transform:translateY(2px);box-shadow:0 2px 0 #0b345b}
-    #menu .play-row{display:flex!important;gap:12px;justify-content:center;flex-wrap:wrap}
-    #dsmp .ds-close-x{position:absolute;top:9px;right:10px;width:42px;height:42px;padding:0;margin:0;border:2px solid #9bb9d8;border-radius:50%;background:#b72e3c;color:#fff;font:900 30px/1 Arial,sans-serif;display:grid;place-items:center;z-index:5;box-shadow:0 3px 0 #641923}
-    #dsmp .ds-close-x:hover{background:#e04455;transform:scale(1.05)}
-    #dsmp .card{padding-top:58px}
-  </style>
-  <link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@c8c3341491d40a352213cfb6e60eac89904d36cb/Dont-Splash/assets/index-DIsvQiZr.css">
-  <!-- GameMonetize SDK (interstitials). src/ads.js pauses + mutes on SDK_GAME_PAUSE, resumes on SDK_GAME_START. -->
-  <script type="text/javascript">
-    window.SDK_OPTIONS = {
-      gameId: "xfyxlaku2ksfgh7wp1pgyr8bi5clmnfi",
-      onEvent: function (event) {
-        if (event.name === "SDK_GAME_PAUSE") window.__gmPaused = true;
-        if (event.name === "SDK_GAME_START") window.__gmPaused = false;
-        window.dispatchEvent(new CustomEvent("gamemonetize", { detail: event }));
-      }
-    };
-    (function (d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s);
-      js.id = id;
-      js.src = "https://api.gamemonetize.com/sdk.js";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, "script", "gamemonetize-sdk"));
-  </script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>DON'T SPLASH</title>
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/dontsplash.webp" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@700;900&display=swap" rel="stylesheet" />
+<style>
+  html,body{margin:0;height:100%;background:#071018;color:#fff;font-family:Nunito,Arial,sans-serif;overflow:hidden}
+  canvas{display:block;width:100%;height:100%}
+  #ui{position:fixed;inset:0;pointer-events:none;z-index:5}
+  #ui *{pointer-events:auto}
+  .screen{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 20%,#16324a 0%,#071018 70%)}
+  .hidden{display:none!important}
+  .card{width:min(560px,calc(100vw - 28px));background:#122033ee;border:2px solid #4e749c;border-radius:18px;padding:22px 22px 18px;box-shadow:0 18px 50px #000a;text-align:center}
+  .logo{width:min(420px,86vw);height:auto;filter:drop-shadow(0 8px 0 #0006)}
+  h1{font-family:"Luckiest Guy",cursive;letter-spacing:1px;margin:8px 0}
+  .tag{opacity:.85;margin:4px 0 14px}
+  button{font-family:Nunito,Arial,sans-serif;font-weight:900;border:0;border-radius:12px;padding:12px 16px;margin:6px;cursor:pointer;color:#fff}
+  .green{background:#15965d;box-shadow:0 4px 0 #0c5a38}
+  .blue{background:#1769b2;box-shadow:0 4px 0 #0b345b}
+  .gold{background:#c48812;box-shadow:0 4px 0 #6d4a08}
+  .red{background:#b72e3c}
+  button:active{transform:translateY(2px);box-shadow:none}
+  .row{display:flex;flex-wrap:wrap;justify-content:center}
+  .seg button{background:#0d1a2b;box-shadow:none;border:2px solid #355272}
+  .seg button.on{background:#1d6cb8;border-color:#8ed5ff}
+  input{width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1px solid #526985;background:#091526;color:#fff;margin:8px 0;font:700 16px Nunito,Arial}
+  .hint{color:#b9cbe0;font-size:14px;min-height:18px}
+  .code{font-family:"Luckiest Guy",cursive;font-size:34px;letter-spacing:6px;color:#8ed5ff}
+  #hudBar{position:absolute;top:10px;left:0;right:0;display:flex;justify-content:space-between;padding:0 16px;pointer-events:none;text-shadow:0 2px 4px #000}
+  #hudBar b{font-family:"Luckiest Guy",cursive;font-size:22px}
+  #msg{position:absolute;bottom:18px;left:0;right:0;text-align:center;font-weight:900;text-shadow:0 2px 6px #000}
+  .swatches{display:flex;gap:8px;justify-content:center;margin:8px 0}
+  .swatches i{width:28px;height:28px;border-radius:50%;display:inline-block;border:2px solid #fff;cursor:pointer}
+  .swatches i.on{outline:3px solid #8ed5ff}
+  #chatlog{height:90px;overflow:auto;text-align:left;background:#091526;border-radius:8px;padding:8px;font-size:13px}
+  .ver{position:absolute;right:10px;bottom:8px;opacity:.55;font-size:12px;pointer-events:none}
+</style>
 </head>
 <body>
-  <canvas id="gl"></canvas>
-  <!-- Per-view HUD layers are created by JS inside #hud -->
-  <div id="hud">
-    <div id="splitBar" class="hidden"></div>
-    <div id="pauseWrap" class="hidden">
-      <button id="pauseBtn" aria-label="Pause"><i></i><i></i></button>
-      <span class="pk">(P)</span>
+<div id="ui">
+  <section id="menu" class="screen">
+    <div class="card">
+      <img class="logo" alt="DON'T SPLASH" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/dontsplash.webp" />
+      <p class="tag">Stay on the platforms. The water wakes it.</p>
+      <div class="row">
+        <button class="green" id="soloBtn">SINGLEPLAYER</button>
+        <button class="blue" id="duoBtn">2 PLAYERS</button>
+        <button class="gold" id="onlineBtn">3 PLAYERS ONLINE</button>
+      </div>
+      <div class="seg row" id="diffSeg">
+        <button data-diff="easy" class="on">EASY</button>
+        <button data-diff="normal">NORMAL</button>
+        <button data-diff="hard">HARD</button>
+      </div>
+      <p class="hint" id="menuHint">WASD move · mouse look · Space jump · reach the green dock</p>
+      <p class="hint">Best <span id="best">--</span></p>
     </div>
-  </div>
+    <div class="ver">DON'T SPLASH remake · v3</div>
+  </section>
 
-  <!-- Shared overlays -->
-  <div id="overlay">
-    <!-- MAIN MENU -->
-    <section id="menu" class="panel-screen">
-      <div class="menu-top">
-        <div id="bestLine" class="best-line">BEST TIME = --:--.-</div>
-        <button id="howBtn" class="icon-btn" title="How to play">?</button>
-        <button id="settingsBtn" class="icon-btn" title="Settings">⚙</button>
+  <section id="online" class="screen hidden">
+    <div class="card">
+      <h1>3 PLAYER ONLINE</h1>
+      <input id="name" maxlength="16" placeholder="Your name" />
+      <div class="swatches" id="colors"></div>
+      <div class="row">
+        <button class="green" id="createBtn">CREATE ROOM</button>
+        <button class="blue" id="joinBtn">JOIN ROOM</button>
       </div>
-      <div class="menu-wrap">
-        <div class="menu-main">
-          <img class="logo" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/dontsplash.webp?v=20261103f" alt="DON'T SPLASH" draggable="false" />
-          <p class="tagline" data-i18n="tagline">Don't fall in. Don't make a sound. It hears you.</p>
-          <div class="play-row">
-            <button id="singleplayerBtn" class="rbx-btn green" type="button">SINGLEPLAYER</button>
-            <button id="p1Btn" class="rbx-btn green" type="button"><span data-i18n="player1">1 PLAYER</span></button>
-            <button id="p2Btn" class="rbx-btn blue" type="button"><span data-i18n="player2">2 PLAYERS</span></button>
-          </div>
-          <button id="multiplayerOpenBtn" type="button">ONLINE MULTIPLAYER</button>
-          <div class="rbx-seg" id="diffSeg">
-            <button data-diff="easy" class="on" data-i18n="easy">EASY</button>
-            <button data-diff="normal" data-i18n="normal">NORMAL</button>
-            <button data-diff="hard" id="hardBtn">HARD 🔒</button>
-          </div>
-          <div class="hint" id="diffHint"></div>
-          <a id="meyaLink" class="meya" href="https://meyagames.com/?utm_source=dont-splash&utm_medium=game&utm_campaign=main_menu&utm_content=logo" target="_blank" rel="noopener">
-            <img src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@c8c3341491d40a352213cfb6e60eac89904d36cb/Dont-Splash/meya-logo.webp" alt="MeyaGames" draggable="false" />
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- SETTINGS -->
-    <section id="settings" class="panel-screen hidden">
-      <div class="card rbx-card">
-        <h2 data-i18n="setTitle">SETTINGS</h2>
-        <label><span data-i18n="setLang">Language</span>
-          <select id="setLang"></select>
-        </label>
-        <label><span data-i18n="setSens">Mouse sensitivity</span> <input type="range" id="setSens" min="0.2" max="3" step="0.1" /><span id="setSensV"></span></label>
-        <label><span data-i18n="setFov">Field of view (FOV)</span> <input type="range" id="setFov" min="60" max="100" step="1" /><span id="setFovV"></span></label>
-        <label><span data-i18n="setVol">Volume</span> <input type="range" id="setVol" min="0" max="1" step="0.05" /><span id="setVolV"></span></label>
-        <label><input type="checkbox" id="setPush" /> <span data-i18n="setPush">Friendly PUSH</span></label>
-        <label><input type="checkbox" id="setShake" /> <span data-i18n="setShake">Camera shake</span></label>
-        <label><input type="checkbox" id="setLowQ" /> <span data-i18n="setLowQ">Low quality</span></label>
+      <input id="codeIn" maxlength="6" placeholder="Room code" />
+      <p class="hint" id="onlineHint"></p>
+      <div id="lobby" class="hidden">
+        <div class="code" id="codeOut"></div>
+        <div id="plist" class="hint"></div>
+        <div id="chatlog"></div>
+        <div class="row"><input id="chatIn" maxlength="80" placeholder="Message" style="flex:1" /><button id="sendBtn" class="blue">SEND</button></div>
         <div class="row">
-          <button id="resetSaveBtn" class="rbx-btn red small" data-i18n="resetSave">RESET SAVE</button>
-          <button class="rbx-btn cream small back" data-i18n="back">BACK</button>
+          <button class="green" id="startBtn">START (HOST)</button>
+          <button class="red" id="leaveBtn">LEAVE</button>
         </div>
       </div>
-    </section>
+      <button id="onlineBack" class="blue">BACK</button>
+    </div>
+  </section>
 
-    <!-- HOW TO -->
-    <section id="howto" class="panel-screen hidden">
-      <div class="card rbx-card">
-        <h2 data-i18n="howTitle">HOW TO PLAY</h2>
-        <ul class="how">
-          <li data-i18n="how1"></li>
-          <li data-i18n="how2"></li>
-          <li data-i18n="how3"></li>
-          <li data-i18n="how4"></li>
-          <li data-i18n="how5"></li>
-          <li data-i18n="how6"></li>
-        </ul>
-        <div class="row"><button class="rbx-btn cream small back" data-i18n="back">BACK</button></div>
-      </div>
-    </section>
-
-    <!-- PAUSE -->
-    <section id="pause" class="panel-screen hidden">
-      <div class="card rbx-card narrow">
-        <h2 data-i18n="pause">PAUSED</h2>
-        <button id="resumeBtn" class="rbx-btn green" data-i18n="resume">RESUME</button>
-        <button id="quitBtn" class="rbx-btn cream small" data-i18n="mainMenu">MAIN MENU</button>
-      </div>
-    </section>
-
-    <!-- YOU ESCAPED -->
-    <section id="escaped" class="panel-screen hidden">
-      <div class="card rbx-card escaped-card">
-        <h2 class="esc-title" data-i18n="escaped">YOU ESCAPED</h2>
-        <div class="esc-time" id="escTime">00:00.0</div>
-        <div class="esc-sub"><span id="escDiff">EASY</span> · <span id="escMode">SOLO</span></div>
-        <div class="esc-record" id="escRecord"></div>
-        <div class="row">
-          <button id="playAgainBtn" class="rbx-btn green" data-i18n="playAgain">PLAY AGAIN</button>
-          <button id="lobbyBtn" class="rbx-btn blue" data-i18n="lobby">RETURN TO LOBBY</button>
-        </div>
-        <div class="muted small" id="autoNext"></div>
-      </div>
-    </section>
+  <div id="hud" class="hidden">
+    <div id="hudBar"><b id="timer">00:00.0</b><span id="modeLabel"></span><button id="quitBtn" class="red">MENU</button></div>
+    <div id="msg"></div>
   </div>
+</div>
+<script type="module">
+import * as THREE from "https://unpkg.com/three@0.170.0/build/three.module.js";
+import {initializeApp,getApps,getApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {getDatabase,ref,set,update,onValue,onDisconnect,push,get} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
-  <div id="flash"></div>
-  <script type="module">
-    const singleplayerButton = document.getElementById("singleplayerBtn");
-    singleplayerButton?.addEventListener("click", () => {
-      document.getElementById("p1Btn")?.click();
-    });
-    const multiplayerButton = document.getElementById("multiplayerOpenBtn");
-    let multiplayerModulePromise;
+const firebaseConfig={apiKey:"AIzaSyC_mWlv7NuLbedCxc99DL51OlT-V0F-Bog",authDomain:"multiplayer-code.firebaseapp.com",databaseURL:"https://multiplayer-code-default-rtdb.firebaseio.com",projectId:"multiplayer-code",storageBucket:"multiplayer-code.firebasestorage.app",messagingSenderId:"976456965612",appId:"1:976456965612:web:87755c7adde2f16639b4c9"};
+const fbApp=getApps().length?getApp():initializeApp(firebaseConfig);
+const auth=getAuth(fbApp), db=getDatabase(fbApp);
 
-    multiplayerButton.addEventListener("click", async () => {
-      multiplayerButton.disabled = true;
-      multiplayerButton.textContent = "LOADING MULTIPLAYER...";
-      try {
-        multiplayerModulePromise ||= import("https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/multiplayer.js?v=20261103f");
-        const multiplayer = await multiplayerModulePromise;
-        const open = multiplayer.openMultiplayer || multiplayer.default?.openMultiplayer;
-        if (typeof open !== "function") throw new Error("The downloaded multiplayer.js does not export openMultiplayer(). Refresh the CDN copy and try again.");
-        open();
-      } catch (error) {
-        console.error("Multiplayer failed to load:", error);
-        multiplayerButton.textContent = "MULTIPLAYER FAILED - TRY AGAIN";
-        multiplayerModulePromise = null;
-      } finally {
-        multiplayerButton.disabled = false;
-        if (multiplayerButton.textContent === "LOADING MULTIPLAYER...") {
-          multiplayerButton.textContent = "ONLINE MULTIPLAYER";
-        }
+const $=id=>document.getElementById(id);
+const COLORS=["#38a9ff","#ff5555","#50d890","#c58cff","#f4c542"];
+let diff="easy", color=COLORS[0];
+const speeds={easy:4.2,normal:6.2,hard:8.4};
+const bestKey="dontsplash-v3-best";
+$("best").textContent=localStorage.getItem(bestKey)||"--";
+
+$("diffSeg").onclick=e=>{
+  const b=e.target.closest("[data-diff]"); if(!b)return;
+  diff=b.dataset.diff;
+  [...$("diffSeg").children].forEach(x=>x.classList.toggle("on",x===b));
+};
+COLORS.forEach(c=>{
+  const i=document.createElement("i");
+  i.style.background=c; if(c===color)i.classList.add("on");
+  i.onclick=()=>{color=c;[...$("colors").children].forEach(x=>x.classList.remove("on"));i.classList.add("on");};
+  $("colors").append(i);
+});
+
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled=true;
+document.body.prepend(renderer.domElement);
+addEventListener("resize",()=>{renderer.setSize(innerWidth,innerHeight);});
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x0b1c2c);
+scene.fog=new THREE.Fog(0x0b1c2c,18,70);
+const hemi=new THREE.HemisphereLight(0xb7d4ff,0x1a2830,1.1); scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xfff1d0,1.3); sun.position.set(12,22,8); sun.castShadow=true; scene.add(sun);
+
+const water=new THREE.Mesh(new THREE.PlaneGeometry(240,240), new THREE.MeshStandardMaterial({color:0x12384a,roughness:.25,metalness:.15}));
+water.rotation.x=-Math.PI/2; water.receiveShadow=true; scene.add(water);
+
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};}
+function makeCharacter(hex){
+  const g=new THREE.Group();
+  const mat=c=>new THREE.MeshStandardMaterial({color:c,roughness:.6});
+  const body=new THREE.Mesh(new THREE.CapsuleGeometry(.32,.55,4,10), mat(hex)); body.castShadow=true; body.position.y=1.05; g.add(body);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.24,16,12), mat(0xf0c7a0)); head.position.y=1.72; head.castShadow=true; g.add(head);
+  const eye=new THREE.Mesh(new THREE.SphereGeometry(.045,8,8), mat(0x111111));
+  const e1=eye.clone(); e1.position.set(-.08,1.76,.2); const e2=eye.clone(); e2.position.set(.08,1.76,.2); g.add(e1,e2);
+  const legG=new THREE.Mesh(new THREE.CapsuleGeometry(.09,.38,3,8), mat(0x263448));
+  const l1=legG.clone(); l1.position.set(-.14,.4,0); const l2=legG.clone(); l2.position.set(.14,.4,0);
+  const arm=new THREE.Mesh(new THREE.CapsuleGeometry(.07,.32,3,8), mat(hex));
+  const a1=arm.clone(); a1.position.set(-.42,1.15,0); const a2=arm.clone(); a2.position.set(.42,1.15,0);
+  g.add(l1,l2,a1,a2);
+  g.userData.limbs=[l1,l2,a1,a2];
+  return g;
+}
+function makeMonster(){
+  const g=new THREE.Group();
+  const mat=new THREE.MeshStandardMaterial({color:0x1a2430,roughness:.4,emissive:0x061018});
+  const body=new THREE.Mesh(new THREE.CapsuleGeometry(.7,1.4,6,12), mat); body.rotation.z=Math.PI/2; body.position.y=.4; body.castShadow=true; g.add(body);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.55,16,12), mat); head.position.set(1.15,.55,0); g.add(head);
+  const jaw=new THREE.Mesh(new THREE.BoxGeometry(.5,.12,.42), new THREE.MeshStandardMaterial({color:0x8d1d2c})); jaw.position.set(1.45,.4,0); g.add(jaw);
+  const eye=new THREE.Mesh(new THREE.SphereGeometry(.08,8,8), new THREE.MeshStandardMaterial({color:0xffe14a,emissive:0xffaa00}));
+  const y1=eye.clone(); y1.position.set(1.4,.72,.22); const y2=eye.clone(); y2.position.set(1.4,.72,-.22); g.add(y1,y2);
+  g.userData.jaw=jaw; return g;
+}
+
+let world=[], exitMesh=null, monster=null, players=[], remotes=new Map();
+let mode="solo", running=false, t0=0, over=false, seed=1, rng=mulberry32(1);
+let keys=new Set();
+addEventListener("keydown",e=>{keys.add(e.code); if(["Space","ArrowUp","ArrowDown"].includes(e.code))e.preventDefault();});
+addEventListener("keyup",e=>keys.delete(e.code));
+let yawPtr=0, pitchPtr=.35, locked=false;
+renderer.domElement.addEventListener("click",()=>{ if(running && mode!=="duo") renderer.domElement.requestPointerLock(); });
+document.addEventListener("pointerlockchange",()=>{locked=document.pointerLockElement===renderer.domElement;});
+addEventListener("mousemove",e=>{ if(!locked)return; yawPtr-=e.movementX*0.0022; pitchPtr=Math.max(-.2,Math.min(1.1,pitchPtr-e.movementY*0.002)); });
+
+function clearWorld(){
+  for(const m of world) scene.remove(m);
+  world=[];
+  if(exitMesh){scene.remove(exitMesh);exitMesh=null;}
+  if(monster){scene.remove(monster);monster=null;}
+  for(const p of players) scene.remove(p.mesh);
+  players=[];
+  for(const r of remotes.values()) scene.remove(r.mesh);
+  remotes.clear();
+}
+function buildWorld(s){
+  clearWorld();
+  seed=s>>>0; rng=mulberry32(seed);
+  const platMat=new THREE.MeshStandardMaterial({color:0xcbb98a,roughness:.85});
+  const moss=new THREE.MeshStandardMaterial({color:0x6ea15a,roughness:.9});
+  let x=0,z=0,y=1.2;
+  for(let i=0;i<28;i++){
+    const w=2.4+rng()*2.2, d=2.4+rng()*2.4;
+    const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,.45,d), i%5===0?moss:platMat);
+    mesh.position.set(x,y,z); mesh.castShadow=true; mesh.receiveShadow=true;
+    mesh.userData.box={x,y:y+.22,z,hw:w/2,hd:d/2};
+    scene.add(mesh); world.push(mesh);
+    if(i<27){
+      const gap=1.15+rng()*(diff==="hard"?1.7:diff==="normal"?1.25:.8);
+      const ang=(rng()-.5)*(diff==="easy"?.7:1.3);
+      x+=Math.sin(ang)*gap; z+= (2.1+gap);
+      y=Math.max(.7, Math.min(2.4, y+(rng()-.5)*0.9));
+    }
+  }
+  const last=world[world.length-1];
+  exitMesh=new THREE.Mesh(new THREE.CylinderGeometry(.7,.7,.3,16), new THREE.MeshStandardMaterial({color:0x3dff8a,emissive:0x146b32}));
+  exitMesh.position.set(last.position.x, last.position.y+.4, last.position.z);
+  scene.add(exitMesh);
+  monster=makeMonster();
+  monster.position.set(4,-.15,6);
+  scene.add(monster);
+  monster.userData.target=new THREE.Vector3(4,0,8);
+  monster.userData.awake=0;
+}
+function spawnPlayer(index,hex,name){
+  const start=world[0];
+  const mesh=makeCharacter(hex);
+  const p={
+    index,name,hex,mesh,
+    pos:new THREE.Vector3(start.position.x+(index-0.5)*1.2, start.position.y+1.2, start.position.z),
+    vel:new THREE.Vector3(), yaw:0, pitch:.4,
+    inWater:false, splash:0, caught:false, caughtT:0, win:false, walk:0
+  };
+  mesh.position.copy(p.pos); scene.add(mesh); players.push(p); return p;
+}
+function platformAt(x,z,feetY){
+  let best=null;
+  for(const m of world){
+    const b=m.userData.box;
+    if(Math.abs(x-b.x)<b.hw && Math.abs(z-b.z)<b.hd && feetY>=b.y-0.35 && feetY<=b.y+0.85){
+      if(!best || b.y>best.y) best=b;
+    }
+  }
+  return best;
+}
+const cams=[];
+function ensureCams(n){
+  while(cams.length<n){const c=new THREE.PerspectiveCamera(70,.5,.1,200); cams.push(c);} 
+}
+function stepPlayer(p,dt,input){
+  if(p.caught){ p.caughtT-=dt; if(p.caughtT<=0){ const s=world[0]; p.pos.set(s.position.x,s.position.y+1.4,s.position.z); p.vel.set(0,0,0); p.caught=false; p.inWater=false;} return; }
+  if(p.win) return;
+  const speed=p.inWater?2.1:6.4;
+  const yaw=input.yaw;
+  p.yaw=yaw; p.pitch=input.pitch??p.pitch;
+  const f=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
+  const r=new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));
+  const wish=new THREE.Vector3();
+  if(input.f) wish.add(f); if(input.b) wish.sub(f); if(input.r) wish.add(r); if(input.l) wish.sub(r);
+  if(wish.lengthSq()) wish.normalize().multiplyScalar(speed);
+  p.vel.x=wish.x; p.vel.z=wish.z;
+  const feet=p.pos.y;
+  const box=platformAt(p.pos.x,p.pos.z,feet);
+  const grounded=box && p.vel.y<=0.1 && feet<=box.y+0.15;
+  if(grounded){ p.vel.y=0; p.pos.y=box.y; if(input.jump) p.vel.y=7.2; }
+  else p.vel.y-=18*dt;
+  p.pos.addScaledVector(p.vel,dt);
+  const was=p.inWater;
+  p.inWater=p.pos.y<0.15;
+  if(p.inWater && !was){ p.splash=performance.now(); monster.userData.target.copy(p.pos); monster.userData.awake=1; }
+  if(p.inWater){ p.vel.y*=0.9; if(p.pos.y<-1.2) p.pos.y=-1.2; }
+  if(exitMesh && p.pos.distanceTo(exitMesh.position)<1.3 && !p.inWater){ p.win=true; }
+  p.mesh.position.copy(p.pos);
+  p.mesh.rotation.y=yaw;
+  const moving=wish.lengthSq()>0.2;
+  p.walk+=dt*(moving?10:0);
+  const [l1,l2,a1,a2]=p.mesh.userData.limbs;
+  const s=Math.sin(p.walk);
+  l1.rotation.x=s*.6; l2.rotation.x=-s*.6; a1.rotation.x=-s*.5; a2.rotation.x=s*.5;
+}
+function monsterStep(dt,list){
+  if(!monster) return;
+  let target=monster.userData.target;
+  let best=1e9, hunt=null;
+  for(const p of list){
+    if(!p.inWater||p.caught||p.win) continue;
+    const d=monster.position.distanceTo(p.pos);
+    if(d<best){best=d; hunt=p;}
+  }
+  if(hunt){ target.copy(hunt.pos); monster.userData.awake=1; }
+  const speed=speeds[diff]*(monster.userData.awake?1:.35);
+  const dir=new THREE.Vector3().subVectors(target,monster.position); dir.y=0;
+  const dist=dir.length();
+  if(dist>0.2){ dir.multiplyScalar(1/dist); monster.position.addScaledVector(dir,Math.min(dist,speed*dt)); monster.rotation.y=Math.atan2(dir.x,dir.z); }
+  monster.position.y=Math.sin(performance.now()/300)*.12-.05;
+  monster.userData.jaw.rotation.x=Math.sin(performance.now()/140)*.4;
+  for(const p of list){
+    if(p.caught||p.win) continue;
+    const d=new THREE.Vector2(monster.position.x-p.pos.x, monster.position.z-p.pos.z).length();
+    if(p.inWater && d<1.35){ p.caught=true; p.caughtT=2.2; showMsg(p.name+" got grabbed! Don't splash."); }
+  }
+}
+function showMsg(t){ $("msg").textContent=t; clearTimeout(showMsg._t); showMsg._t=setTimeout(()=>$("msg").textContent="",2200); }
+function fmt(ms){ const s=ms/1000; const m=Math.floor(s/60); return String(m).padStart(2,"0")+":"+(s%60).toFixed(1).padStart(4,"0"); }
+
+let localCount=1;
+function begin(kind){
+  mode=kind; running=true; over=false; t0=performance.now();
+  buildWorld((Date.now()^ (Math.random()*1e9))>>>0);
+  ensureCams(kind==="duo"?2:1);
+  spawnPlayer(0,color,$("name").value.trim()||"You");
+  if(kind==="duo") spawnPlayer(1,"#ff5555","P2");
+  players.forEach((p,i)=>{ p.yaw=0; });
+  yawPtr=0; pitchPtr=.4;
+  $("menu").classList.add("hidden"); $("online").classList.add("hidden"); $("hud").classList.remove("hidden");
+  $("modeLabel").textContent=kind==="duo"?"LOCAL 2P":kind==="online"?"ONLINE 3P":"SINGLEPLAYER";
+}
+$("soloBtn").onclick=()=>begin("solo");
+$("duoBtn").onclick=()=>begin("duo");
+$("quitBtn").onclick=()=>quitToMenu();
+function quitToMenu(){
+  running=false; over=false; document.exitPointerLock?.();
+  clearWorld();
+  $("hud").classList.add("hidden"); $("menu").classList.remove("hidden");
+  if(net.room) leaveRoom(false);
+}
+
+function inputsFor(p){
+  if(mode==="duo"){
+    if(p.index===0) return {f:keys.has("KeyW"),b:keys.has("KeyS"),l:keys.has("KeyA"),r:keys.has("KeyD"),jump:keys.has("Space"),yaw:p.yaw+(keys.has("KeyQ")?2.2:-0)+(keys.has("KeyE")?-2.2:0)*0, pitch:.5};
+  }
+  return null;
+}
+// duo yaw handled inside frame
+
+let acc=0,last=performance.now();
+function frame(now){
+  requestAnimationFrame(frame);
+  const dt=Math.min(.033,(now-last)/1000); last=now;
+  if(water) water.position.y=Math.sin(now/700)*0.05;
+  if(!running){ renderer.render(scene, cams[0]||(cams[0]=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,200))); cams[0].position.set(8,10,14); cams[0].lookAt(0,0,6); return; }
+  if(mode!=="online" || net.host){
+    for(const p of players){
+      let input;
+      if(mode==="duo" && p.index===1){
+        const turn=(keys.has("KeyO")?-1:0)+(keys.has("KeyU")?1:0);
+        p.yaw+=turn*dt*2.2;
+        input={f:keys.has("ArrowUp"),b:keys.has("ArrowDown"),l:keys.has("ArrowLeft"),r:keys.has("ArrowRight"),jump:keys.has("ShiftRight"),yaw:p.yaw,pitch:.5};
+      } else if(mode==="duo"){
+        const turn=(keys.has("KeyQ")?1:0)+(keys.has("KeyE")?-1:0);
+        p.yaw+=turn*dt*2.2;
+        input={f:keys.has("KeyW"),b:keys.has("KeyS"),l:keys.has("KeyA"),r:keys.has("KeyD"),jump:keys.has("Space"),yaw:p.yaw,pitch:.5};
+      } else {
+        players[0].yaw=yawPtr; 
+        input={f:keys.has("KeyW"),b:keys.has("KeyS"),l:keys.has("KeyA"),r:keys.has("KeyD"),jump:keys.has("Space"),yaw:yawPtr,pitch:pitchPtr};
       }
-    });
-  </script>
+      stepPlayer(p,dt,input);
+    }
+    const bodies=[...players, ...remotes.values()];
+    monsterStep(dt,bodies);
+  } else {
+    const me=players[0];
+    me.yaw=yawPtr;
+    stepPlayer(me,dt,{f:keys.has("KeyW"),b:keys.has("KeyS"),l:keys.has("KeyA"),r:keys.has("KeyD"),jump:keys.has("Space"),yaw:yawPtr,pitch:pitchPtr});
+    for(const r of remotes.values()){
+      r.mesh.position.lerp(r.pos,.2);
+      r.mesh.rotation.y=r.yaw;
+      r.inWater=r._inWater;
+    }
+    if(net.monster){
+      monster.position.lerp(net.monster,.35);
+      monster.rotation.y=net.monsterYaw||0;
+    }
+  }
+  if(mode==="online"){
+    for(const [id,r] of remotes){
+      if(!net.players[id]){ scene.remove(r.mesh); remotes.delete(id); }
+    }
+    for(const [id,data] of Object.entries(net.players)){
+      if(id===net.uid) continue;
+      let r=remotes.get(id);
+      if(!r){
+        const mesh=makeCharacter(data.color||"#fff");
+        scene.add(mesh);
+        r={mesh,pos:new THREE.Vector3(),yaw:0,inWater:false,caught:false,win:false,name:data.name||"Player"};
+        remotes.set(id,r);
+      }
+      r.pos.set(+data.x||0,+data.y||0,+data.z||0); r.yaw=+data.yaw||0; r._inWater=!!data.inWater; r.name=data.name||r.name; r.caught=!!data.caught; r.win=!!data.win;
+      if(mode==="online" && net.host){
+        r.mesh.position.lerp(r.pos,.35); r.mesh.rotation.y=r.yaw; r.inWater=r._inWater;
+      }
+    }
+  }
+  const clock=now-t0;
+  $("timer").textContent=fmt(clock);
+  const locals=players.filter(p=>p.win);
+  const need=mode==="duo"?2:1;
+  if(!over && players.length && players.filter(p=>!p.win&&!p.caught).length===0 && players.some(p=>p.win)){}
+  if(!over && players[0] && players.every(p=>p.win)){
+    over=true; const rec=fmt(clock);
+    const prev=localStorage.getItem(bestKey);
+    if(!prev || clock < parseTime(prev)) localStorage.setItem(bestKey,rec);
+    $("best").textContent=localStorage.getItem(bestKey);
+    showMsg("YOU ESCAPED  "+rec);
+    setTimeout(()=>quitToMenu(),2600);
+  }
+  renderViews();
+}
+function parseTime(s){const [m,r]=s.split(":"); return (+m)*60000+(+r)*1000;}
+function camFor(p,cam){
+  const back=new THREE.Vector3(Math.sin(p.yaw)*5.2, 3.1+ (p.pitch||.4), Math.cos(p.yaw)*5.2);
+  cam.position.copy(p.pos).add(back);
+  cam.lookAt(p.pos.x, p.pos.y+1.3, p.pos.z);
+}
+function renderViews(){
+  const w=innerWidth,h=innerHeight;
+  if(mode==="duo" && players[1]){
+    renderer.setScissorTest(true);
+    for(let i=0;i<2;i++){
+      const cam=cams[i]; cam.aspect=(w/2)/h; cam.updateProjectionMatrix();
+      renderer.setViewport(i*w/2,0,w/2,h); renderer.setScissor(i*w/2,0,w/2,h);
+      camFor(players[i],cam); renderer.render(scene,cam);
+    }
+    renderer.setScissorTest(false);
+  } else if(players[0]){
+    const cam=cams[0]; cam.aspect=w/h; cam.updateProjectionMatrix();
+    renderer.setViewport(0,0,w,h); camFor(players[0],cam); renderer.render(scene,cam);
+  }
+}
+ensureCams(2);
+requestAnimationFrame(frame);
+
+// ----- online up to 3 -----
+const net={room:"",host:false,uid:"",players:{},offs:[],monster:null,monsterYaw:0};
+function showOnline(on){ $("menu").classList.toggle("hidden",on); $("online").classList.toggle("hidden",!on); }
+$("onlineBtn").onclick=()=>showOnline(true);
+$("onlineBack").onclick=()=>{ if(net.room) leaveRoom(false); showOnline(false); };
+async function login(){ if(!auth.currentUser) await signInAnonymously(auth); net.uid=auth.currentUser.uid; }
+function myState(){
+  const p=players[0];
+  return {name:($("name").value.trim()||"Player").slice(0,16), color, host:net.host,
+    x:p?p.pos.x:0,y:p?p.pos.y:0,z:p?p.pos.z:0,yaw:p?p.yaw:0,inWater:!!p?.inWater,caught:!!p?.caught,win:!!p?.win,updated:Date.now(),
+    mx:monster?monster.position.x:0,my:monster?monster.position.y:0,mz:monster?monster.position.z:0,myaw:monster?monster.rotation.y:0};
+}
+async function createRoom(){
+  $("onlineHint").textContent="Signing in…";
+  try{
+    await login();
+    let code="", exists=true;
+    for(let i=0;i<8&&exists;i++){
+      code=Math.random().toString(36).slice(2,8).toUpperCase().replace(/[^A-Z0-9]/g,"A");
+      while(code.length<6) code+="X";
+      exists=(await get(ref(db,"rooms/"+code))).exists();
+    }
+    if(exists) throw new Error("Could not reserve a code. Try again.");
+    net.room=code; net.host=true;
+    await set(ref(db,"rooms/"+code+"/meta"),{host:net.uid,started:false,created:Date.now()});
+    await set(ref(db,"rooms/"+code+"/players/"+net.uid), myState());
+    await onDisconnect(ref(db,"rooms/"+code+"/players/"+net.uid)).remove();
+    enter();
+  }catch(e){ console.error(e); $("onlineHint").textContent=e.message||String(e); }
+}
+async function joinRoom(){
+  try{
+    await login();
+    const code=$("codeIn").value.trim().toUpperCase();
+    if(!/^[A-Z0-9]{6}$/.test(code)) throw new Error("Enter a 6 character code.");
+    const snap=await get(ref(db,"rooms/"+code));
+    if(!snap.exists()) throw new Error("Room not found.");
+    const meta=snap.child("meta").val()||{};
+    if(meta.started) throw new Error("That match already started.");
+    const ps=snap.child("players").val()||{};
+    if(Object.keys(ps).length>=3 && !ps[net.uid]) throw new Error("Room is full (3 players).");
+    net.room=code; net.host=false;
+    await set(ref(db,"rooms/"+code+"/players/"+net.uid), myState());
+    await onDisconnect(ref(db,"rooms/"+code+"/players/"+net.uid)).remove();
+    enter();
+  }catch(e){ console.error(e); $("onlineHint").textContent=e.message||String(e); }
+}
+function enter(){
+  for(const u of net.offs) u(); net.offs=[];
+  $("lobby").classList.remove("hidden");
+  $("codeOut").textContent=net.room;
+  $("startBtn").style.display=net.host?"inline-block":"none";
+  net.offs.push(onValue(ref(db,"rooms/"+net.room+"/players"),s=>{
+    net.players=s.val()||{};
+    const n=Object.keys(net.players).length;
+    $("plist").textContent=n+" / 3 connected — "+Object.values(net.players).map(p=>p.name||"Player").join(", ");
+    const hostRow=Object.values(net.players).find(p=>p.host && p.mx!=null);
+    if(!net.host && hostRow && monster){
+      net.monster=new THREE.Vector3(+hostRow.mx,+hostRow.my,+hostRow.mz);
+      net.monsterYaw=+hostRow.myaw||0;
+    }
+  }));
+  net.offs.push(onValue(ref(db,"rooms/"+net.room+"/chat"),s=>{
+    const list=Object.values(s.val()||{}).sort((a,b)=>(a.time||0)-(b.time||0)).slice(-30);
+    $("chatlog").innerHTML=list.map(m=>"<div><b>"+escapeHtml(m.name)+":</b> "+escapeHtml(m.text)+"</div>").join("");
+    $("chatlog").scrollTop=9999;
+  }));
+  net.offs.push(onValue(ref(db,"rooms/"+net.room+"/meta"),s=>{
+    const m=s.val()||{};
+    if(m.started && !running){
+      diff=m.diff||"easy";
+      begin("online");
+      // rebuild with shared seed (begin made a random one)
+      const meName=($("name").value.trim()||"You");
+      buildWorld(m.seed>>>0);
+      spawnPlayer(0,color,meName);
+      $("modeLabel").textContent="ONLINE 3P · "+net.room;
+    }
+  }));
+  net.offs.push({ /* placeholder replaced by interval below */ });
+  net.timer=setInterval(()=>{
+    if(!net.room||!net.uid) return;
+    update(ref(db,"rooms/"+net.room+"/players/"+net.uid), myState()).catch(()=>{});
+  },100);
+}
+function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&","<":"<",">":">",'"':""","'":"&#39;"}[c]));}
+async function startMatch(){
+  if(!net.host) return;
+  const seed=(Date.now() ^ (Math.random()*1e9))>>>0;
+  await update(ref(db,"rooms/"+net.room+"/meta"),{started:true,seed,diff,now:Date.now()});
+}
+function leaveRoom(showMenu){
+  if(net.timer) clearInterval(net.timer);
+  if(net.room && net.uid) set(ref(db,"rooms/"+net.room+"/players/"+net.uid), null).catch(()=>{});
+  for(const u of net.offs) if(typeof u==="function") u();
+  net.offs=[]; net.room=""; net.host=false; net.players={};
+  $("lobby").classList.add("hidden");
+  if(showMenu) showOnline(false);
+}
+$("createBtn").onclick=createRoom;
+$("joinBtn").onclick=joinRoom;
+$("startBtn").onclick=startMatch;
+$("leaveBtn").onclick=()=>leaveRoom(true);
+$("sendBtn").onclick=sendChat;
+$("chatIn").addEventListener("keydown",e=>{if(e.key==="Enter") sendChat();});
+async function sendChat(){
+  const text=$("chatIn").value.trim().slice(0,80); if(!text||!net.room) return; $("chatIn").value="";
+  await push(ref(db,"rooms/"+net.room+"/chat"),{name:($("name").value.trim()||"Player"), text, time:Date.now()});
+}
+</script>
 </body>
 </html>
