@@ -2,7 +2,7 @@ import {initializeApp,getApps,getApp} from "https://www.gstatic.com/firebasejs/1
 import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {getDatabase,ref,set,update,onValue,onDisconnect,push,get} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
-const firebaseConfig={apiKey:"AIzaSyC_mWlv7NuLbedCxc99DL51OlT-V0-F-Bog",authDomain:"multiplayer-code.firebaseapp.com",databaseURL:"https://multiplayer-code-default-rtdb.firebaseio.com",projectId:"multiplayer-code",storageBucket:"multiplayer-code.firebasestorage.app",messagingSenderId:"976456965612",appId:"1:976456965612:web:87755c7adde2f16639b4c9",measurementId:"G-735HLGCNLM"};
+const firebaseConfig={apiKey:"AIzaSyC_mWlv7NuLbedCxc99DL51OlT-V0F-Bog",authDomain:"multiplayer-code.firebaseapp.com",databaseURL:"https://multiplayer-code-default-rtdb.firebaseio.com",projectId:"multiplayer-code",storageBucket:"multiplayer-code.firebasestorage.app",messagingSenderId:"976456965612",appId:"1:976456965612:web:87755c7adde2f16639b4c9",measurementId:"G-735HLGCNLM"};
 const app=getApps().length?getApp():initializeApp(firebaseConfig);
 const auth=getAuth(app),db=getDatabase(app);
 let user=null,room="",host=false,roomStarted=false;
