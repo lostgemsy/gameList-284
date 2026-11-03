@@ -11,7 +11,6 @@ let playersSnapshot={},presenceSnapshot={},playersCache={},latestNetworkState=nu
 let bodyColor="#38a9ff",bodyStyle="classic",networkRoleInstalled=false;
 const remote=new Map(),labels=new Map(),bubbles=new Map();
 const $=id=>document.getElementById(id);
-const THREE=()=>window.__THREE__||null;
 const safeName=s=>String(s||"Player").replace(/[^a-z0-9 _-]/gi,"").trim().slice(0,16)||"Player";
 const safeColor=c=>/^#[0-9a-f]{6}$/i.test(c||"")?c:"#38a9ff";
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -37,7 +36,7 @@ panel.innerHTML=
 '<div>Choose your character color</div><div class="swatches" id="ds-colors"><button data-c="#38a9ff" style="background:#38a9ff"></button><button data-c="#ff5555" style="background:#ff5555"></button><button data-c="#50d890" style="background:#50d890"></button><button data-c="#c58cff" style="background:#c58cff"></button><button data-c="#f4c542" style="background:#f4c542"></button></div>' +
 '<div class="row"><button id="ds-create" class="green">CREATE ROOM</button><button id="ds-join">JOIN ROOM</button></div><input id="ds-code-in" maxlength="6" placeholder="Enter room code"><p class="hint" id="ds-hint">Create a room or enter your friend’s code.</p></section>' +
 '<section id="ds-lobby" hidden><div class="hint">SHARE THIS ROOM CODE</div><div class="code" id="ds-code"></div><div class="players" id="ds-players"></div>' +
-'<label>Character style<select id="ds-style"><option value="classic">Classic</option></select></label>' +
+'<label>Character style<select id="ds-style"><option value="classic">Classic</option><option value="tall">Tall</option><option value="round">Round</option></select></label>' +
 '<div class="chat" id="ds-chat"></div><div class="row"><input id="ds-msg" maxlength="100" placeholder="Message"><button id="ds-send">SEND</button></div>' +
 '<p class="hint" id="ds-roomhint">Waiting for players…</p><div class="row"><button id="ds-start" class="green">START GAME (HOST)</button><button id="ds-leave">LEAVE ROOM</button></div></section>' +
 '<p class="hint">Everyone in this room loads the same level. The host keeps the monster and moving world synchronized.</p><div class="row"><button id="ds-close">CLOSE</button></div></div>';
@@ -240,23 +239,84 @@ function syncRemotePlayers(data){
   }
  }
 }
-function makeRemoteAvatar(id,p){
- const g=window.game,T=THREE(),local=localPlayer();
- if(!g||!T||!local||!local.body||!g.scene)return null;
- const model=local.body.clone(true);
- model.visible=true;
- model.traverse(o=>{
-  o.layers.set(0);
-  if(o.isMesh){
-   if(Array.isArray(o.material))o.material=o.material.map(m=>m.clone());
-   else if(o.material)o.material=o.material.clone();
-   o.castShadow=true;
-   o.receiveShadow=true;
-  }
+function threeAPI(){
+ const g=window.game,local=localPlayer();
+ const Vector3=local?.pos?.constructor||local?.camera?.position?.constructor||null;
+ let boxMesh=null;
+ g?.scene?.traverse(o=>{
+  if(!boxMesh&&o.isMesh&&o.geometry&&(o.geometry.type==="BoxGeometry"||o.geometry.parameters?.width))boxMesh=o;
  });
+ return {Vector3,Mesh:boxMesh?.constructor||null,BoxGeometry:boxMesh?.geometry?.constructor||null};
+}
+function tintAvatar(root,hex){
+ const local=localPlayer();
+ const Color=local?.camera?.position?.constructor?null:null;
+ root.traverse(o=>{
+  o.layers.set(0);
+  o.visible=true;
+  o.frustumCulled=false;
+  if(!o.isMesh||!o.material)return;
+  const list=Array.isArray(o.material)?o.material:[o.material];
+  const clones=list.map(m=>{
+   const c=m.clone();
+   if(c.color&&c.color.set){
+    try{c.color.lerp(new c.color.constructor(hex),.62);}catch(e){c.color.set(hex);}
+   }
+   c.side=2;
+   return c;
+  });
+  o.material=clones.length===1?clones[0]:clones;
+  o.castShadow=true;
+  o.receiveShadow=true;
+ });
+}
+function styleScale(style){
+ if(style==="tall")return [1,1.18,1];
+ if(style==="round")return [1.18,.88,1.18];
+ return [1,1,1];
+}
+function buildFallbackHuman(T,hex,style){
+ const root=new window.game.scene.constructor();
+ const Mesh=T.Mesh,Box=T.BoxGeometry,Colorish=null;
+ if(!Mesh||!Box)return null;
+ function part(w,h,d,x,y,z,color){
+  const mesh=new Mesh(new Box(w,h,d));
+  const src=localPlayer()?.body;
+  let mat=null;
+  src?.traverse(o=>{if(!mat&&o.isMesh&&o.material)mat=Array.isArray(o.material)?o.material[0]:o.material;});
+  mesh.material=mat?mat.clone():mesh.material;
+  if(mesh.material?.color){try{mesh.material.color.set(color);}catch(e){}}
+  mesh.position.set(x,y,z);
+  mesh.castShadow=true;
+  mesh.layers.set(0);
+  root.add(mesh);
+ }
+ const tall=style==="tall",round=style==="round";
+ const bodyW=round?.62:.42, bodyH=tall?.95:.72;
+ part(bodyW,bodyH,round?.46:.28,0,1.05,0,hex);
+ part(.26,.26,.26,0,tall?1.78:1.55,0,"#f0c7a0");
+ part(.14,.48,.14,-.32,1.0,0,hex);
+ part(.14,.48,.14,.32,1.0,0,hex);
+ part(.16,.5,.16,-.14,.28,0,"#263448");
+ part(.16,.5,.16,.14,.28,0,"#263448");
+ return root;
+}
+function makeRemoteAvatar(id,p){
+ const g=window.game,T=threeAPI(),local=localPlayer();
+ if(!g||!g.scene||!local)return null;
+ let model=null;
+ if(local.body){
+  model=local.body.clone(true);
+  tintAvatar(model,safeColor(p.color));
+  const sc=styleScale(p.style);
+  model.scale.set(sc[0],sc[1],sc[2]);
+ }else{
+  model=buildFallbackHuman(T,safeColor(p.color),p.style);
+ }
+ if(!model)return null;
+ model.visible=true;
  model.position.set(Number(p.x)||0,Number(p.y)||0,Number(p.z)||0);
  model.rotation.y=Number(p.yaw)||0;
- model.visible=true;
  g.scene.add(model);
  const tag=document.createElement("div");
  tag.className="dsmp-name";
@@ -274,8 +334,8 @@ function makeRemoteAvatar(id,p){
  return avatar;
 }
 function updateRemoteVisuals(){
- const T=THREE(),g=window.game,local=localPlayer();
- if(T&&g&&local&&local.camera&&g.scene){
+ const T=threeAPI(),g=window.game,local=localPlayer();
+ if(T.Vector3&&g&&local&&local.camera&&g.scene){
   for(const [id,p] of Object.entries(playersCache)){
    if(id===user?.uid)continue;
    let a=remote.get(id);
@@ -284,8 +344,7 @@ function updateRemoteVisuals(){
    a.target={x:Number(p.x)||0,y:Number(p.y)||0,z:Number(p.z)||0,yaw:Number(p.yaw)||0};
    const target=new T.Vector3(a.target.x,a.target.y,a.target.z);
    a.root.position.lerp(target,.32);
-   let yaw=a.target.yaw-currentYaw(a.root.rotation.y,a.target.yaw);
-   a.root.rotation.y+=yaw*.32;
+   a.root.rotation.y+=currentYaw(a.root.rotation.y,a.target.yaw)*.32;
    const projected=new T.Vector3(a.target.x,a.target.y+2.05,a.target.z).project(local.camera);
    const x=(projected.x*.5+.5)*window.innerWidth;
    const y=(-projected.y*.5+.5)*window.innerHeight;
@@ -363,7 +422,7 @@ function installHostAuthority(g){
   };
  }
 }
-function THREE_NS(){return window.__THREE__||null;}
+function THREE_NS(){return threeAPI();}
 function installGuestAuthority(g){
  if(networkRoleInstalled)return;
  networkRoleInstalled=true;
@@ -461,7 +520,7 @@ function applyCrushingState(g,data,T){
   c.group.clear();
   c.walls=[];
   for(const q of walls){
-   const mesh=new T.Mesh(new T.BoxGeometry(q.W,q.H,q.D),g.mats.redWall);
+   if(!T.Mesh||!T.BoxGeometry)return;const mesh=new T.Mesh(new T.BoxGeometry(q.W,q.H,q.D),g.mats.redWall);
    mesh.position.set(q.x,q.H/2-1,(c.z0+c.z1)/2);
    c.group.add(mesh);
    c.walls.push({mesh,W:q.W,H:q.H,D:q.D,finalX:q.finalX,dir:q.dir,x:q.x,state:q.state,hold:q.hold});
@@ -501,6 +560,14 @@ function startSynchronizedGame(meta){
   if((Number(g.seed)>>>0)!==sharedSeed){
    console.error("World seed mismatch. Expected",sharedSeed,"received",g.seed);
    $("ds-roomhint").textContent="Warning: world seed mismatch. Please leave and rejoin.";
+  }
+  const me=localPlayer();
+  if(me&&user){
+   let hash=0;
+   for(const ch of user.uid)hash=(hash*33+ch.charCodeAt(0))|0;
+   me.pos.x+=((Math.abs(hash)%5)-2)*1.6;
+   me.pos.z+=((Math.abs(hash>>3)%5)-2)*1.6;
+   if(me.body)me.body.position.copy(me.pos);
   }
   installRole(g);
   closePanel();
