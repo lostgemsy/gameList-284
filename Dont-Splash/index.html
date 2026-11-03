@@ -361,6 +361,10 @@ function frame(now){
     if(net.monster){
       monster.position.lerp(net.monster,.35);
       monster.rotation.y=net.monsterYaw||0;
+      const me=players[0];
+      if(me && !me.caught && !me.win && me.inWater && Math.hypot(monster.position.x-me.pos.x, monster.position.z-me.pos.z)<1.35){
+        me.caught=true; me.caughtT=2.2; showMsg("The monster grabbed you. Stay out of the water.");
+      }
     }
   }
   if(mode==="online"){
