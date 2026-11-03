@@ -16,7 +16,7 @@
     #overlay #menu:not(.hidden) { display:flex; visibility:visible; opacity:1; }
     #overlay .panel-screen.hidden { display:none !important; }
   </style>
-  <link rel="icon" href="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/dontsplash.webp?v=20261103e" type="image/webp" />
+  <link rel="icon" href="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/dontsplash.webp?v=20261103f" type="image/webp" />
   
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -76,13 +76,14 @@
       </div>
       <div class="menu-wrap">
         <div class="menu-main">
-          <img class="logo" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/dontsplash.webp?v=20261103e" alt="DON'T SPLASH" draggable="false" />
+          <img class="logo" src="https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/dontsplash.webp?v=20261103f" alt="DON'T SPLASH" draggable="false" />
           <p class="tagline" data-i18n="tagline">Don't fall in. Don't make a sound. It hears you.</p>
-          <button id="multiplayerOpenBtn" type="button">ONLINE MULTIPLAYER</button>
           <div class="play-row">
-            <button id="p1Btn" class="rbx-btn green"><span data-i18n="player1">1 PLAYER</span></button>
-            <button id="p2Btn" class="rbx-btn blue"><span data-i18n="player2">2 PLAYERS</span></button>
+            <button id="singleplayerBtn" class="rbx-btn green" type="button">SINGLEPLAYER</button>
+            <button id="p1Btn" class="rbx-btn green" type="button"><span data-i18n="player1">1 PLAYER</span></button>
+            <button id="p2Btn" class="rbx-btn blue" type="button"><span data-i18n="player2">2 PLAYERS</span></button>
           </div>
+          <button id="multiplayerOpenBtn" type="button">ONLINE MULTIPLAYER</button>
           <div class="rbx-seg" id="diffSeg">
             <button data-diff="easy" class="on" data-i18n="easy">EASY</button>
             <button data-diff="normal" data-i18n="normal">NORMAL</button>
@@ -159,6 +160,10 @@
 
   <div id="flash"></div>
   <script type="module">
+    const singleplayerButton = document.getElementById("singleplayerBtn");
+    singleplayerButton?.addEventListener("click", () => {
+      document.getElementById("p1Btn")?.click();
+    });
     const multiplayerButton = document.getElementById("multiplayerOpenBtn");
     let multiplayerModulePromise;
 
@@ -166,7 +171,7 @@
       multiplayerButton.disabled = true;
       multiplayerButton.textContent = "LOADING MULTIPLAYER...";
       try {
-        multiplayerModulePromise ||= import("https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/multiplayer.js?v=20261103e");
+        multiplayerModulePromise ||= import("https://cdn.jsdelivr.net/gh/lostgemsy/gameList-284@main/Dont-Splash/multiplayer.js?v=20261103f");
         const multiplayer = await multiplayerModulePromise;
         const open = multiplayer.openMultiplayer || multiplayer.default?.openMultiplayer;
         if (typeof open !== "function") throw new Error("The downloaded multiplayer.js does not export openMultiplayer(). Refresh the CDN copy and try again.");
