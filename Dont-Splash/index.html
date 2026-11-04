@@ -528,7 +528,7 @@ function enter(){
     update(ref(db,"rooms/"+net.room+"/players/"+net.uid), myState()).catch(()=>{});
   },100);
 }
-function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&","<":"<",">":">",'"':""","'":"&#39;"}[c]));}
+function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"\u0026amp;","<":"\u0026lt;",">":"\u0026gt;","\"":"\u0026quot;","'":"\u0026#39;"}[c]));}
 async function startMatch(){
   if(!net.host) return;
   const seed=(Date.now() ^ (Math.random()*1e9))>>>0;
