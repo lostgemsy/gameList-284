@@ -11,7 +11,7 @@
   html,body{margin:0;height:100%;background:#071018;color:#fff;font-family:Nunito,Arial,sans-serif;overflow:hidden}
   canvas{position:fixed;inset:0;z-index:0;display:block;width:100%;height:100%}
   #ui{position:fixed;inset:0;z-index:5;pointer-events:none}
-  .screen{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(to bottom,rgba(7,16,24,.25),rgba(7,16,24,.45));pointer-events:none}
+  .screen{position:absolute;inset:0;display:grid;place-items:center;background:transparent;pointer-events:none}
   .card{pointer-events:auto}
   .hidden{display:none!important}
   .card{width:min(560px,calc(100vw - 28px));background:#122033ee;border:2px solid #4e749c;border-radius:18px;padding:22px 22px 18px;box-shadow:0 18px 50px #000a;text-align:center}
@@ -60,7 +60,7 @@
       <p class="hint" id="menuHint">WASD move · mouse look · Space jump · reach the green dock</p>
       <p class="hint">Best <span id="best">--</span></p>
     </div>
-    <div class="ver">DON'T SPLASH remake · v3</div>
+    <div class="ver">DON'T SPLASH v4 — if the water is behind this card, it loaded</div>
   </section>
 
   <section id="online" class="screen hidden">
@@ -93,15 +93,22 @@
     <div id="msg"></div>
   </div>
 </div>
-<script type="module">
-import * as THREE from "https://unpkg.com/three@0.170.0/build/three.module.js";
-import {initializeApp,getApps,getApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import {getDatabase,ref,set,update,onValue,onDisconnect,push,get} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
-
+<script src="https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
 const firebaseConfig={apiKey:"AIzaSyC_mWlv7NuLbedCxc99DL51OlT-V0F-Bog",authDomain:"multiplayer-code.firebaseapp.com",databaseURL:"https://multiplayer-code-default-rtdb.firebaseio.com",projectId:"multiplayer-code",storageBucket:"multiplayer-code.firebasestorage.app",messagingSenderId:"976456965612",appId:"1:976456965612:web:87755c7adde2f16639b4c9"};
-const fbApp=getApps().length?getApp():initializeApp(firebaseConfig);
-const auth=getAuth(fbApp), db=getDatabase(fbApp);
+if(!window.firebase) throw new Error("Firebase failed to load");
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth(), db=firebase.database();
+const ref=path=>db.ref(path);
+const set=(r,v)=>r.set(v);
+const update=(r,v)=>r.update(v);
+const get=r=>r.once("value");
+const push=(r,v)=>r.push(v);
+const onDisconnect=r=>r.onDisconnect();
+function onValue(r,cb){ const fn=snap=>cb(snap); r.on("value",fn); return ()=>r.off("value",fn); }
 
 const $=id=>document.getElementById(id);
 const COLORS=["#38a9ff","#ff5555","#50d890","#c58cff","#f4c542"];
@@ -441,7 +448,7 @@ const net={room:"",host:false,uid:"",players:{},offs:[],monster:null,monsterYaw:
 function showOnline(on){ $("menu").classList.toggle("hidden",on); $("online").classList.toggle("hidden",!on); }
 $("onlineBtn").onclick=()=>showOnline(true);
 $("onlineBack").onclick=()=>{ if(net.room) leaveRoom(false); showOnline(false); };
-async function login(){ if(!auth.currentUser) await signInAnonymously(auth); net.uid=auth.currentUser.uid; }
+async function login(){ if(!auth.currentUser) await auth.signInAnonymously(); net.uid=auth.currentUser.uid; }
 function myState(){
   const p=players[0];
   return {name:($("name").value.trim()||"Player").slice(0,16), color, host:net.host,
