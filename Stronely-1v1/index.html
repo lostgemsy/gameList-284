@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b10">
+  <title>1V1 ARENA — Competitive FPS</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.181.2/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.181.2/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="game-root"></div>
+
+  <main id="menu" class="screen">
+    <div class="menu-grid"></div>
+    <section class="menu-card">
+      <div class="eyebrow"><span class="live-dot"></span> COMPETITIVE ARENA // SEASON 01</div>
+      <h1>1V1 <span>ARENA</span></h1>
+      <p class="tagline">AIM TRUE. MOVE FAST. OWN THE ROUND.</p>
+      <div class="identity-row"><span class="player-swatch"></span><span id="player-name">GUEST PLAYER</span><span id="online-status">OFFLINE</span></div>
+      <button id="play-button" class="button button-primary">PLAY ONLINE <span>↗</span></button>
+      <button id="practice-button" class="button">PRACTICE</button>
+      <div class="menu-footer">
+        <button id="settings-button" class="text-button">SETTINGS</button>
+        <button id="controls-button" class="text-button">CONTROLS</button>
+      </div>
+      <p id="firebase-note" class="config-note">Online matchmaking needs Firebase configuration in <code>main/firebase.js</code>.</p>
+    </section>
+    <div class="menu-version">ARENA BUILD 01 <span>·</span> ORIGINAL WEB FPS</div>
+  </main>
+
+  <section id="matchmaking-screen" class="matchmaking-screen hidden" aria-live="polite">
+    <div class="matchmaking-grid"></div>
+    <div class="matchmaking-card">
+      <button id="lobby-back-button" class="lobby-back">← MENU</button>
+      <div class="eyebrow"><span class="search-pulse"></span> ARENA NETWORK // 1V1</div>
+      <h2>LOOKING FOR<br><span>OPPONENT</span></h2>
+      <div id="lobby-countdown" class="lobby-countdown" aria-live="assertive">10</div>
+      <p id="lobby-status">Connecting securely to the arena...</p>
+      <div class="room-code-panel">
+        <span class="lobby-label">YOUR ROOM CODE</span>
+        <strong id="room-code">------</strong>
+        <button id="copy-room-code" class="copy-code" type="button">COPY CODE</button>
+      </div>
+      <div class="lobby-actions">
+        <button id="create-room-button" class="lobby-action" type="button">CREATE A ROOM <span>＋</span></button>
+        <label class="lobby-label" for="join-room-code">HAVE A FRIEND'S CODE?</label>
+        <div class="join-row"><input id="join-room-code" maxlength="6" autocomplete="off" placeholder="ENTER CODE"><button id="join-room-button" type="button">JOIN ROOM</button></div>
+      </div>
+      <p class="lobby-footnote">Share your code with a friend, or wait here for an opponent.</p>
+    </div>
+  </section>
+
+  <section id="hud" aria-live="polite">
+    <div class="hud-top">
+      <div id="team-one" class="team-label"><span class="team-dot blue"></span><span id="player-one-name">BLUE</span></div>
+      <div class="scoreboard"><span id="score-one">0</span><i>—</i><span id="score-two">0</span></div>
+      <div id="team-two" class="team-label right"><span id="player-two-name">RED</span><span class="team-dot red"></span></div>
+    </div>
+    <div id="match-status" class="match-status">WAITING FOR OPPONENT</div>
+    <div id="crosshair" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <div id="hit-marker" aria-hidden="true">×</div>
+    <div class="hud-bottom">
+      <div class="health-block"><span class="hud-caption">VITALS</span><strong id="health-value">HP 100</strong><div class="health-track"><i id="health-bar"></i></div></div>
+      <div class="weapon-block"><span class="hud-caption">PRIMARY // AR</span><strong>AR <small>ASSAULT RIFLE</small></strong></div>
+      <div class="ammo-block"><span class="hud-caption">MAG / RESERVE</span><strong id="ammo-value">30 <i>/</i> 90</strong></div>
+    </div>
+    <div id="reload-indicator">RELOADING</div>
+    <div id="muzzle-flash" aria-hidden="true"></div>
+    <div id="pointer-hint">CLICK TO CAPTURE MOUSE</div>
+    <div id="toast" role="status"></div>
+  </section>
+
+  <section id="overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <div id="overlay-kicker" class="eyebrow">MATCH UPDATE</div>
+      <h2 id="overlay-title">MATCH OVER</h2>
+      <p id="overlay-message"></p>
+      <div class="overlay-actions"><button id="again-button" class="button button-primary">PLAY AGAIN</button><button id="menu-button" class="button">RETURN TO MENU</button></div>
+    </div>
+  </section>
+
+  <dialog id="settings-dialog" class="modal">
+    <form method="dialog"><button class="modal-close" aria-label="Close">×</button><div class="eyebrow">PREFERENCES</div><h2>SETTINGS</h2><label for="sensitivity">Mouse sensitivity <span id="sensitivity-value">0.0020</span></label><input id="sensitivity" type="range" min="0.0008" max="0.005" step="0.0001" value="0.002"><p class="modal-note">Your sensitivity is saved in this browser.</p><button class="button button-primary modal-done">DONE</button></form>
+  </dialog>
+  <dialog id="controls-dialog" class="modal">
+    <form method="dialog"><button class="modal-close" aria-label="Close">×</button><div class="eyebrow">FIELD MANUAL</div><h2>CONTROLS</h2><div class="control-list"><span>MOVE</span><b>W A S D</b><span>SPRINT</span><b>SHIFT</b><span>JUMP</span><b>SPACE</b><span>AIM</span><b>MOUSE</b><span>FIRE</span><b>LEFT CLICK</b><span>RELOAD</span><b>R</b><span>RELEASE MOUSE</span><b>ESC</b></div><button class="button button-primary modal-done">GOT IT</button></form>
+  </dialog>
+
+  <script type="module" src="main/game.js"></script>
+</body>
+</html>
