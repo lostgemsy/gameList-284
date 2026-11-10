@@ -1,0 +1,20 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "matchmaking": {
+      "current": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".validate": "!newData.exists() || newData.child('status').val() === 'waiting' || newData.child('status').val() === 'matched'"
+      }
+    },
+    "matches": {
+      "$roomId": {
+        ".read": "auth != null && (data.child('whiteUid').val() === auth.uid || data.child('blackUid').val() === auth.uid)",
+        ".write": "auth != null && (data.child('whiteUid').val() === auth.uid || data.child('blackUid').val() === auth.uid || newData.child('whiteUid').val() === auth.uid || newData.child('blackUid').val() === auth.uid)",
+        ".validate": "!newData.exists() || (newData.hasChildren(['whiteUid', 'blackUid', 'fen', 'status']) && newData.child('whiteUid').val() !== newData.child('blackUid').val() && (newData.child('turnUid').val() === null || newData.child('turnUid').val() === newData.child('whiteUid').val() || newData.child('turnUid').val() === newData.child('blackUid').val()))"
+      }
+    }
+  }
+}

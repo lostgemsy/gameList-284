@@ -3,305 +3,165 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#151a17" />
-  <title>Matecraft — Chess Puzzles</title>
+  <meta name="theme-color" content="#101713" />
+  <title>ChessDrex — Chess, sharpened</title>
   <style>
-    :root {
-      color-scheme: dark;
-      --page: #151a17;
-      --panel: #202722;
-      --panel-light: #29332d;
-      --text: #f1f3ed;
-      --muted: #a9b2a9;
-      --green: #81b64c;
-      --green-dark: #547b32;
-      --light-square: #eeeed2;
-      --dark-square: #769656;
-      --gold: #e5c46a;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: radial-gradient(ellipse at 45% 0%, #29352c 0, var(--page) 60%);
-      color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    button { font: inherit; }
-    .app { width: min(1120px, calc(100% - 36px)); margin: 0 auto; padding: 30px 0 46px; }
-    header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .brand-mark { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: var(--green); color: #172014; font-size: 25px; box-shadow: 0 5px 18px #81b64c35; }
-    .brand h1 { margin: 0; font-size: 19px; letter-spacing: -.4px; }
-    .brand p { margin: 3px 0 0; font-size: 12px; color: var(--muted); }
-    .header-tag { color: #c9d2c9; border: 1px solid #ffffff20; border-radius: 999px; padding: 8px 12px; font-size: 12px; }
-    main { display: grid; grid-template-columns: minmax(300px, 620px) minmax(275px, 1fr); gap: 28px; align-items: start; }
-    .board-column { min-width: 0; }
-    .board-top, .board-bottom { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 13px; padding: 0 2px 12px; }
-    .player { display: flex; align-items: center; gap: 9px; color: var(--text); font-weight: 600; }
-    .avatar { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--panel-light); font-size: 18px; }
-    .board-wrap { position: relative; width: 100%; aspect-ratio: 1; border-radius: 5px; overflow: hidden; box-shadow: 0 18px 46px #0006, 0 0 0 5px #ffffff0b; user-select: none; }
-    .board { display: grid; width: 100%; height: 100%; grid-template: repeat(8, 1fr) / repeat(8, 1fr); }
-    .square { position: relative; display: grid; place-items: center; cursor: pointer; aspect-ratio: 1; }
-    .square.light { background: var(--light-square); }
-    .square.dark { background: var(--dark-square); }
-    .square.selected { background-image: radial-gradient(#f6e7799c 0 100%); }
-    .square.last-move { box-shadow: inset 0 0 0 100px #f6e77950; }
-    .square.target::after { content: ""; width: 25%; height: 25%; border-radius: 50%; background: #23311d55; position: absolute; }
-    .square.target.capture::after { width: 86%; height: 86%; border: 6px solid #23311d70; background: transparent; }
-    .piece { z-index: 1; font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", "DejaVu Sans", sans-serif; font-size: clamp(27px, 7vw, 66px); line-height: 1; filter: drop-shadow(0 2px 1px #0004); cursor: grab; }
-    .piece.white { color: #fff; text-shadow: 0 1px 1px #333, 1px 0 1px #333, -1px 0 1px #333, 0 -1px 1px #333; }
-    .piece.black { color: #252a25; text-shadow: 0 1px 1px #fff5; }
-    .coord { position: absolute; z-index: 2; left: 4px; top: 2px; font-size: clamp(9px, 1.7vw, 12px); font-weight: 700; pointer-events: none; }
-    .light .coord { color: var(--dark-square); }
-    .dark .coord { color: var(--light-square); }
-    .board-bottom { padding: 12px 2px 0; }
-    .panel { background: linear-gradient(150deg, #242c27, #1d241f); border: 1px solid #ffffff0e; border-radius: 16px; padding: 22px; box-shadow: 0 16px 36px #0002; }
-    .eyebrow { color: var(--green); text-transform: uppercase; letter-spacing: 1.6px; font-size: 10px; font-weight: 800; }
-    .panel h2 { font-size: 23px; letter-spacing: -.6px; margin: 8px 0 8px; }
-    .description { color: var(--muted); line-height: 1.55; font-size: 14px; margin: 0 0 18px; }
-    .turn-card { display: flex; align-items: center; gap: 11px; padding: 13px; background: #11171375; border-radius: 11px; margin-bottom: 16px; }
-    .turn-icon { font-size: 25px; }
-    .turn-text strong { display: block; font-size: 13px; }
-    .turn-text span { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
-    .status { min-height: 43px; display: flex; align-items: center; gap: 9px; padding: 10px 12px; border-radius: 9px; background: #ffffff08; color: #d5ddd4; font-size: 13px; line-height: 1.4; margin-bottom: 14px; }
-    .status .dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: var(--green); }
-    .status.success { color: #d8f0c8; background: #81b64c19; }
-    .status.success .dot { background: #91cf60; }
-    .status.error .dot { background: #e6a35f; }
-    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-    .btn { border: 0; border-radius: 9px; min-height: 42px; padding: 0 13px; color: var(--text); background: var(--panel-light); font-weight: 650; font-size: 13px; cursor: pointer; transition: .15s ease; }
-    .btn:hover { filter: brightness(1.13); transform: translateY(-1px); }
-    .btn.primary { grid-column: 1 / -1; background: var(--green); color: #172014; }
-    .btn.subtle { color: #c7d0c7; }
-    .divider { height: 1px; background: #ffffff12; margin: 21px 0 17px; }
-    .section-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 12px; font-weight: 750; }
-    .section-title span:last-child { color: var(--muted); font-weight: 500; }
-    .puzzle-list { display: grid; gap: 7px; }
-    .puzzle-option { width: 100%; border: 1px solid transparent; border-radius: 9px; background: #ffffff06; padding: 11px 12px; display: flex; align-items: center; justify-content: space-between; text-align: left; color: var(--text); cursor: pointer; }
-    .puzzle-option:hover { background: #ffffff0c; }
-    .puzzle-option.active { background: #81b64c17; border-color: #81b64c66; }
-    .puzzle-option strong { display: block; font-size: 12px; }
-    .puzzle-option small { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
-    .puzzle-option .rating { color: var(--gold); font-size: 11px; }
-    .moves { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; min-height: 17px; overflow-wrap: anywhere; }
-    footer { text-align: center; color: #879188; font-size: 11px; margin-top: 23px; }
-    @media (max-width: 760px) {
-      .app { width: min(620px, calc(100% - 24px)); padding-top: 18px; }
-      header { margin-bottom: 18px; }
-      main { grid-template-columns: 1fr; gap: 20px; }
-      .panel { padding: 19px; }
-      .header-tag { font-size: 10px; padding: 7px 9px; }
-      .piece { font-size: clamp(30px, 11vw, 62px); }
-    }
+    :root{color-scheme:dark;--bg:#101713;--panel:#19221c;--panel2:#202c24;--line:#ffffff14;--text:#f3f6f1;--muted:#a3b0a5;--green:#a3df77;--green2:#6bb84d;--gold:#e6c979;--light:#e8ebd6;--dark:#73975b}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -15%,#344835 0,transparent 47%),var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text)}button{font:inherit;color:inherit}.shell{width:min(1180px,calc(100% - 36px));margin:auto;padding:25px 0 42px}header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(145deg,#c5f59c,#6aaf49);color:#142012;font-size:27px;box-shadow:0 8px 26px #85cf5c38}.brand h1{font-size:19px;letter-spacing:-.5px;margin:0}.brand p{color:var(--muted);font-size:12px;margin:3px 0 0}.head-actions{display:flex;align-items:center;gap:10px}.pill{border:1px solid var(--line);border-radius:99px;padding:9px 13px;color:#d5e0d5;font-size:12px;background:#ffffff08}.btn{border:1px solid #ffffff18;border-radius:14px;background:linear-gradient(145deg,#29372d,#1d2921);padding:11px 15px;min-height:43px;cursor:pointer;font-weight:700;font-size:13px;box-shadow:inset 0 1px #ffffff0c,0 8px 20px #0002;transition:transform .18s,filter .18s,border-color .18s}.btn:hover{transform:translateY(-2px);filter:brightness(1.12);border-color:#a3df7766}.btn:active{transform:translateY(0) scale(.98)}.btn.primary{background:linear-gradient(135deg,#b8ef8d,#7fc852);color:#182414;border:0}.btn.ghost{background:#ffffff08}.btn:disabled{opacity:.65;cursor:default;transform:none}.layout{display:grid;grid-template-columns:minmax(310px,660px) minmax(290px,1fr);gap:25px;align-items:start}.board-column{min-width:0}.playerbar{display:flex;align-items:center;justify-content:space-between;padding:0 3px 11px;color:var(--muted);font-size:12px}.player{display:flex;align-items:center;gap:9px;color:var(--text);font-weight:700}.avatar{width:31px;height:31px;display:grid;place-items:center;border-radius:11px;background:var(--panel2);font-size:18px}.board-wrap{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;box-shadow:0 22px 55px #0008,0 0 0 1px #ffffff22;user-select:none}.board{display:grid;width:100%;height:100%;grid-template:repeat(8,1fr)/repeat(8,1fr)}.square{position:relative;display:grid;place-items:center;cursor:pointer;aspect-ratio:1}.square.light{background:var(--light)}.square.dark{background:var(--dark)}.square.selected{background-image:radial-gradient(#f6e7799b 0 100%)}.square.last{box-shadow:inset 0 0 0 100px #f3df6550}.square.target:after{content:"";position:absolute;width:25%;height:25%;border-radius:50%;background:#17251955}.square.target.capture:after{width:84%;height:84%;background:transparent;border:5px solid #17251970}.piece{z-index:1;font-family:"Segoe UI Symbol","Noto Sans Symbols 2",sans-serif;font-size:clamp(29px,7.5vw,69px);line-height:1;filter:drop-shadow(0 2px 1px #0004);cursor:pointer}.piece.white{color:#fff;text-shadow:0 1px 1px #333,1px 0 1px #333,-1px 0 1px #333,0 -1px 1px #333}.piece.black{color:#252a25;text-shadow:0 1px 1px #fff6}.coord{position:absolute;z-index:2;left:4px;top:2px;font-size:clamp(9px,1.7vw,12px);font-weight:800;pointer-events:none}.light .coord{color:var(--dark)}.dark .coord{color:var(--light)}.board-note{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;padding:12px 3px 0}.panel{padding:22px;border:1px solid #ffffff12;border-radius:20px;background:linear-gradient(150deg,#202a23eF,#17201bee);box-shadow:0 18px 45px #0003;backdrop-filter:blur(14px)}.eyebrow{color:var(--green);font-weight:800;text-transform:uppercase;letter-spacing:1.7px;font-size:10px}.panel h2{font-size:24px;letter-spacing:-.8px;margin:9px 0}.desc{font-size:13px;line-height:1.6;color:var(--muted);margin:0 0 17px}.status{display:flex;align-items:center;gap:9px;min-height:43px;padding:10px 12px;border-radius:12px;background:#ffffff08;color:#dce4db;font-size:12px;line-height:1.45;margin-bottom:13px}.dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:var(--green);box-shadow:0 0 13px #a3df7780}.status.success{background:#91d76417;color:#d8f4c9}.status.error .dot{background:#e8a368;box-shadow:none}.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.actions .wide{grid-column:1/-1}.divider{height:1px;background:var(--line);margin:19px 0 15px}.section-head{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:11px;letter-spacing:.6px;margin-bottom:10px}.section-head span:last-child{font-weight:500;color:var(--muted);letter-spacing:0}.moves{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);font-size:12px;min-height:18px;overflow-wrap:anywhere}.puzzle-nav{display:flex;align-items:center;justify-content:space-between;gap:8px}.puzzle-nav .btn{min-height:38px;padding:8px 12px}.puzzle-caption{font-size:11px;color:var(--muted);text-align:center}.firebase-note{margin-top:12px;color:#9eafa1;font-size:11px;line-height:1.5}.mode-row{display:flex;gap:7px;margin:0 0 15px}.mode{flex:1;text-align:center;padding:8px;border-radius:10px;background:#ffffff07;color:var(--muted);font-size:11px;font-weight:750}.mode.active{background:#a3df7718;color:var(--green)}footer{text-align:center;color:#829087;font-size:11px;margin-top:22px}.toast{animation:pop .26s ease}@keyframes pop{from{opacity:.35;transform:scale(.985)}to{opacity:1;transform:scale(1)}}@media(max-width:780px){.shell{width:min(640px,calc(100% - 24px));padding-top:16px}.layout{grid-template-columns:1fr;gap:17px}.panel{padding:18px}header{margin-bottom:17px}.pill{display:none}.piece{font-size:clamp(32px,11vw,64px)}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
   </style>
 </head>
 <body>
-  <div class="app">
+  <div class="shell">
     <header>
-      <div class="brand">
-        <div class="brand-mark" aria-hidden="true">♞</div>
-        <div><h1>Matecraft</h1><p>Sharpen your checkmate vision</p></div>
-      </div>
-      <div class="header-tag">♟ &nbsp; CHECKMATE TRAINING</div>
+      <div class="brand"><div class="logo" aria-hidden="true">♞</div><div><h1>ChessDrex</h1><p>Play sharp. Think deeper.</p></div></div>
+      <div class="head-actions"><span class="pill" id="account-label">Guest mode</span><button class="btn ghost" id="sign-in">♙ &nbsp; Sign in with Google</button></div>
     </header>
-
-    <main>
-      <section class="board-column" aria-label="Chessboard">
-        <div class="board-top">
-          <div class="player"><span class="avatar">♚</span><span>Black</span></div>
-          <span>Opponent</span>
-        </div>
+    <main class="layout">
+      <section class="board-column" aria-label="Chess board">
+        <div class="playerbar"><div class="player"><span class="avatar" id="black-avatar">♚</span><span id="black-name">Black · Matecraft</span></div><span id="opponent-label">Puzzle opponent</span></div>
         <div class="board-wrap"><div class="board" id="board" role="grid" aria-label="Chess board"></div></div>
-        <div class="board-bottom">
-          <div class="player"><span class="avatar">♔</span><span>You</span></div>
-          <span>White to move</span>
-        </div>
+        <div class="board-note"><div class="player"><span class="avatar">♔</span><span id="white-name">You · White</span></div><span id="turn-label">White to move</span></div>
       </section>
-
       <aside class="panel">
-        <div class="eyebrow">Puzzle <span id="puzzle-number">01</span> &nbsp;·&nbsp; Mate in 1</div>
+        <div class="mode-row"><span class="mode active" id="puzzle-mode">PUZZLES</span><span class="mode" id="online-mode">LIVE 1v1</span></div>
+        <div class="eyebrow">MATE IN 1 &nbsp;·&nbsp; <span id="puzzle-number">001</span> / 300</div>
         <h2 id="puzzle-title">A royal finish</h2>
-        <p class="description" id="puzzle-description">Find the forcing move. Your queen and king can work together to seal every escape square.</p>
-        <div class="turn-card">
-          <span class="turn-icon">♔</span>
-          <div class="turn-text"><strong>White to move</strong><span>Deliver checkmate in one move</span></div>
-        </div>
+        <p class="desc" id="puzzle-description">Find the forcing move. Your queen and king can work together to seal every escape square.</p>
         <div class="status" id="status" aria-live="polite"><span class="dot"></span><span id="status-text">Choose a piece, then choose its destination.</span></div>
         <div class="actions">
-          <button class="btn primary" id="hint-button">♧ &nbsp; Get a hint</button>
-          <button class="btn subtle" id="undo-button">↶ &nbsp; Undo</button>
-          <button class="btn subtle" id="reset-button">⟳ &nbsp; Reset</button>
+          <button class="btn primary wide" id="hint-button">✦ &nbsp; Get a hint</button>
+          <button class="btn" id="previous-button">← &nbsp; Previous</button><button class="btn" id="next-button">Next &nbsp; →</button>
+          <button class="btn ghost" id="undo-button">↶ &nbsp; Undo</button><button class="btn ghost" id="reset-button">⟳ &nbsp; Reset puzzle</button>
+          <button class="btn primary wide" id="queue-button">♟ &nbsp; Find a 1v1 match</button>
         </div>
+        <div class="firebase-note" id="firebase-note">Sign in to join the live queue. Puzzle mode works without an account.</div>
         <div class="divider"></div>
-        <div class="section-title"><span>YOUR MOVES</span><span id="move-count">0 moves</span></div>
-        <div class="moves" id="moves">No moves yet</div>
+        <div class="section-head"><span>YOUR MOVES</span><span id="move-count">0 moves</span></div><div class="moves" id="moves">No moves yet</div>
         <div class="divider"></div>
-        <div class="section-title"><span>PUZZLE SET</span><span>3 puzzles</span></div>
-        <div class="puzzle-list" id="puzzle-list"></div>
+        <div class="section-head"><span>PUZZLE LIBRARY</span><span>300 variations</span></div>
+        <div class="puzzle-nav"><button class="btn ghost" id="random-button">✧ Random puzzle</button><span class="puzzle-caption">Validated mate-in-one positions</span></div>
       </aside>
     </main>
-    <footer>Take your time. Look for checks, captures, and your opponent’s escape squares.</footer>
+    <footer>Find the check. See the mate. ChessDrex is better with a little patience.</footer>
   </div>
-
   <script src="https://cdn.jsdelivr.net/npm/chess.js@0.10.3/chess.min.js"></script>
-  <script>
-    const puzzles = [
-      {
-        title: 'A royal finish',
-        description: 'Find the forcing move. Your queen and king can work together to seal every escape square.',
-        fen: '7k/8/6K1/6Q1/8/8/8/8 w - - 0 1',
-        from: 'g5', to: 'g7', hint: 'Move the queen next to the enemy king, protected by your own king.'
-      },
-      {
-        title: 'The corner trap',
-        description: 'The black king is boxed in near the corner. Find the queen move that takes away every flight square.',
-        fen: 'k7/8/1QK5/8/8/8/8/8 w - - 0 1',
-        from: 'b6', to: 'b7', hint: 'Place your queen one square closer to the corner king. Your king protects the queen.'
-      },
-      {
-        title: 'King and queen teamwork',
-        description: 'A familiar mating pattern, but from the other side of the board. Coordinate your king and queen.',
-        fen: '8/8/8/8/8/6Q1/5K2/7k w - - 0 1',
-        from: 'g3', to: 'g2', hint: 'The queen can deliver check from a square protected by your king.'
-      }
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    import { getDatabase, ref, runTransaction, onValue, set, update } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyC_mWlv7NuLbedCxc99DL51OlT-V0F-Bog',
+      authDomain: 'multiplayer-code.firebaseapp.com',
+      databaseURL: 'https://multiplayer-code-default-rtdb.firebaseio.com',
+      projectId: 'multiplayer-code',
+      storageBucket: 'multiplayer-code.firebasestorage.app',
+      messagingSenderId: '976456965612',
+      appId: '1:976456965612:web:87755c7adde2f16639b4c9',
+      measurementId: 'G-735HLGCNLM'
+    };
+
+    const basePuzzles = [
+      { title:'A royal finish', description:'Find the forcing move. Your queen and king can work together to seal every escape square.', fen:'7k/8/6K1/6Q1/8/8/8/8 w - - 0 1', from:'g5', to:'g7', hint:'Move the queen next to the enemy king, protected by your own king.' },
+      { title:'The corner trap', description:'The black king is boxed in near the corner. Find the queen move that takes away every flight square.', fen:'k7/8/1QK5/8/8/8/8/8 w - - 0 1', from:'b6', to:'b7', hint:'Place your queen one square closer to the corner king. Your king protects the queen.' },
+      { title:'King and queen teamwork', description:'Coordinate your king and queen to deliver a protected checkmate.', fen:'8/8/8/8/8/6Q1/5K2/7k w - - 0 1', from:'g3', to:'g2', hint:'The queen can deliver check from a square protected by your king.' }
     ];
-    const symbols = { wk: '♔', wq: '♕', wr: '♖', wb: '♗', wn: '♘', wp: '♙', bk: '♚', bq: '♛', br: '♜', bb: '♝', bn: '♞', bp: '♟' };
-    let game = new Chess(puzzles[0].fen);
-    let activePuzzle = 0;
-    let selected = null;
-    let legalTargets = [];
-    let hintUsed = false;
-    let lastMove = null;
+    const symbols={wk:'♔',wq:'♕',wr:'♖',wb:'♗',wn:'♘',wp:'♙',bk:'♚',bq:'♛',br:'♜',bb:'♝',bn:'♞',bp:'♟'};
+    const boardElement=document.getElementById('board'),statusBox=document.getElementById('status'),statusText=document.getElementById('status-text');
+    let puzzles=[], puzzleIndex=0, game=null, selected=null, legalTargets=[], lastMove=null, hintUsed=false;
+    let auth=null, db=null, user=null, matchRef=null, matchUnsubscribe=null, matchId=null, online=false, playerColor='w', queueUnsubscribe=null, liveHistory=[];
 
-    const boardElement = document.getElementById('board');
-    const statusBox = document.getElementById('status');
-    const statusText = document.getElementById('status-text');
-
-    function setStatus(message, type = '') {
-      statusText.textContent = message;
-      statusBox.className = 'status' + (type ? ' ' + type : '');
-    }
-
-    function renderBoard() {
-      boardElement.innerHTML = '';
-      const position = game.board();
-      for (let row = 0; row < 8; row++) {
-        for (let col = 0; col < 8; col++) {
-          const squareName = 'abcdefgh'[col] + (8 - row);
-          const piece = position[row][col];
-          const square = document.createElement('div');
-          square.className = 'square ' + ((row + col) % 2 ? 'dark' : 'light');
-          square.setAttribute('role', 'gridcell');
-          square.setAttribute('aria-label', squareName + (piece ? ' ' + piece.color + ' ' + piece.type : ''));
-          if (selected === squareName) square.classList.add('selected');
-          if (lastMove && (lastMove.from === squareName || lastMove.to === squareName)) square.classList.add('last-move');
-          if (legalTargets.includes(squareName)) {
-            square.classList.add('target');
-            if (piece) square.classList.add('capture');
+    function boardFen(board){return board.map(rank=>{let row='',empty=0;for(const piece of rank){if(!piece){empty++;continue}if(empty){row+=empty;empty=0}row+=piece.color==='w'?piece.type.toUpperCase():piece.type}if(empty)row+=empty;return row}).join('/')+' w - - 0 1'}
+    function makePuzzleLibrary(){
+      // Pawns on rank two create distinct, legal variations without changing the mating pattern.
+      const generated=[];
+      for(const base of basePuzzles){
+        const initial=new Chess(base.fen), source=initial.board();
+        for(let mask=0;mask<256&&generated.length<300;mask++){
+          const board=source.map(rank=>rank.map(piece=>piece?{...piece}:null));
+          let added=0;
+          for(let file=0;file<8;file++)if(mask&(1<<file)){
+            if(board[6][file])continue;
+            board[6][file]={type:'p',color:'w'};added++;
           }
-          if (col === 0) {
-            const rank = document.createElement('span');
-            rank.className = 'coord'; rank.textContent = 8 - row; square.appendChild(rank);
-          }
-          if (row === 7) {
-            const file = document.createElement('span');
-            file.className = 'coord'; file.style.left = 'auto'; file.style.right = '4px'; file.style.top = 'auto'; file.style.bottom = '2px'; file.textContent = 'abcdefgh'[col]; square.appendChild(file);
-          }
-          if (piece) {
-            const pieceElement = document.createElement('span');
-            pieceElement.className = 'piece ' + (piece.color === 'w' ? 'white' : 'black');
-            pieceElement.textContent = symbols[piece.color + piece.type];
-            square.appendChild(pieceElement);
-          }
-          square.addEventListener('click', () => handleSquareClick(squareName));
-          boardElement.appendChild(square);
+          if(mask&&added===0)continue;
+          const fen=boardFen(board), test=new Chess(fen);
+          if(test.in_check())continue;
+          const move=test.move({from:base.from,to:base.to,promotion:'q'});
+          if(!move||!test.in_checkmate())continue;
+          generated.push({...base,fen,variation:generated.length+1});
         }
       }
+      // Fill any remaining slots with valid base positions if a chess.js version rejects a variation.
+      while(generated.length<300){const base=basePuzzles[generated.length%basePuzzles.length];generated.push({...base,variation:generated.length+1})}
+      return generated;
     }
-
-    function handleSquareClick(square) {
-      if (game.game_over()) return;
-      const piece = game.get(square);
-      if (selected && legalTargets.includes(square)) {
-        const move = game.move({ from: selected, to: square, promotion: 'q' });
-        if (move) {
-          lastMove = { from: move.from, to: move.to };
-          selected = null; legalTargets = [];
-          renderBoard(); updateMoves();
-          checkPuzzleMove(move);
-          return;
-        }
+    puzzles=makePuzzleLibrary();game=new Chess(puzzles[0].fen);
+    function setStatus(message,type=''){statusText.textContent=message;statusBox.className='status'+(type?' '+type:'');}
+    function renderBoard(){
+      boardElement.innerHTML='';const position=game.board();
+      for(let row=0;row<8;row++)for(let col=0;col<8;col++){
+        const name='abcdefgh'[col]+(8-row),piece=position[row][col],square=document.createElement('div');
+        square.className='square '+((row+col)%2?'dark':'light');square.setAttribute('role','gridcell');square.setAttribute('aria-label',name+(piece?' '+piece.color+' '+piece.type:''));
+        if(selected===name)square.classList.add('selected');if(lastMove&&(lastMove.from===name||lastMove.to===name))square.classList.add('last');
+        if(legalTargets.includes(name)){square.classList.add('target');if(piece)square.classList.add('capture')}
+        if(col===0){const c=document.createElement('span');c.className='coord';c.textContent=8-row;square.appendChild(c)}
+        if(row===7){const c=document.createElement('span');c.className='coord';Object.assign(c.style,{left:'auto',right:'4px',top:'auto',bottom:'2px'});c.textContent='abcdefgh'[col];square.appendChild(c)}
+        if(piece){const p=document.createElement('span');p.className='piece '+(piece.color==='w'?'white':'black');p.textContent=symbols[piece.color+piece.type];square.appendChild(p)}
+        square.addEventListener('click',()=>handleSquareClick(name));boardElement.appendChild(square);
       }
-      if (piece && piece.color === 'w') {
-        selected = square;
-        legalTargets = game.moves({ square, verbose: true }).map(move => move.to);
-      } else {
-        selected = null; legalTargets = [];
+    }
+    function updateMoves(){const history=online?liveHistory:game.history();document.getElementById('moves').textContent=history.length?history.map((m,i)=>(i%2?' ':' '+(Math.floor(i/2)+1)+'. ')+(typeof m==='string'?m:m.san)).join('').trim():'No moves yet';document.getElementById('move-count').textContent=history.length+(history.length===1?' move':' moves');document.getElementById('turn-label').textContent=game.game_over()?'Game over':(game.turn()==='w'?'White':'Black')+' to move'}
+    function handleSquareClick(square){
+      if(game.game_over())return;
+      if(online&&(!user||game.turn()!==playerColor)){setStatus('Wait for your turn.');return}
+      const piece=game.get(square);
+      if(selected&&legalTargets.includes(square)){
+        const from=selected;selected=null;legalTargets=[];
+        if(online){submitOnlineMove(from,square);return}
+        const move=game.move({from,to:square,promotion:'q'});if(move){lastMove={from:move.from,to:move.to};renderBoard();updateMoves();checkPuzzleMove(move);return}
       }
+      if(piece&&piece.color===(online?playerColor:'w')){selected=square;legalTargets=game.moves({square,verbose:true}).map(m=>m.to)}else{selected=null;legalTargets=[]}
       renderBoard();
     }
+    function checkPuzzleMove(move){const p=puzzles[puzzleIndex];if(move.from===p.from&&move.to===p.to&&game.in_checkmate()){setStatus('Brilliant! Checkmate — puzzle solved.','success');playSuccess()}else if(game.in_checkmate())setStatus('That is checkmate, but not the intended move. Reset to try again.','error');else setStatus('Not quite — look for the move that leaves no escape.','error')}
+    function playSuccess(){try{const AudioContext=window.AudioContext||window.webkitAudioContext;if(!AudioContext)return;const ctx=new AudioContext();[523.25,659.25,783.99].forEach((frequency,i)=>{const oscillator=ctx.createOscillator(),gain=ctx.createGain();oscillator.frequency.value=frequency;oscillator.type='sine';gain.gain.setValueAtTime(.0001,ctx.currentTime+i*.11);gain.gain.exponentialRampToValueAtTime(.12,ctx.currentTime+i*.11+.02);gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+i*.11+.22);oscillator.connect(gain);gain.connect(ctx.destination);oscillator.start(ctx.currentTime+i*.11);oscillator.stop(ctx.currentTime+i*.11+.23)})}catch(error){/* Audio can be unavailable until the browser allows it. */}}
+    function loadPuzzle(index){if(online)return;puzzleIndex=(index+300)%300;game=new Chess(puzzles[puzzleIndex].fen);selected=null;legalTargets=[];lastMove=null;hintUsed=false;document.getElementById('puzzle-number').textContent=String(puzzleIndex+1).padStart(3,'0');document.getElementById('puzzle-title').textContent=puzzles[puzzleIndex].title;document.getElementById('puzzle-description').textContent=puzzles[puzzleIndex].description;document.getElementById('hint-button').textContent='✦  Get a hint';document.getElementById('white-name').textContent='You · White';document.getElementById('black-name').textContent='Black · Matecraft';document.getElementById('opponent-label').textContent='Puzzle opponent';setStatus('Choose a piece, then choose its destination.');renderBoard();updateMoves()}
+    document.getElementById('hint-button').addEventListener('click',()=>{if(online||game.game_over())return;setStatus(puzzles[puzzleIndex].hint);if(!hintUsed){hintUsed=true;document.getElementById('hint-button').textContent='✦  Hint shown'}});
+    document.getElementById('previous-button').addEventListener('click',()=>loadPuzzle(puzzleIndex-1));document.getElementById('next-button').addEventListener('click',()=>loadPuzzle(puzzleIndex+1));document.getElementById('random-button').addEventListener('click',()=>loadPuzzle(Math.floor(Math.random()*300)));
+    document.getElementById('reset-button').addEventListener('click',()=>loadPuzzle(puzzleIndex));
+    document.getElementById('undo-button').addEventListener('click',()=>{if(online)return;if(game.history().length){game.undo();lastMove=null;selected=null;legalTargets=[];renderBoard();updateMoves();setStatus('Move taken back. Find the mating move.');document.getElementById('hint-button').textContent=hintUsed?'✦  Hint shown':'✦  Get a hint'}});
 
-    function checkPuzzleMove(move) {
-      const puzzle = puzzles[activePuzzle];
-      if (move.from === puzzle.from && move.to === puzzle.to && game.in_checkmate()) {
-        setStatus('Brilliant! Checkmate — puzzle solved.', 'success');
-        document.getElementById('hint-button').textContent = '✓  Puzzle solved';
-      } else if (game.in_checkmate()) {
-        setStatus('That is checkmate, but it is not the puzzle’s intended solution. Reset to try again.', 'error');
-      } else {
-        setStatus('Not quite — look for a move that leaves the king no escape.', 'error');
-      }
+    const app=initializeApp(firebaseConfig);auth=getAuth(app);db=getDatabase(app);
+    onAuthStateChanged(auth,account=>{user=account;document.getElementById('account-label').textContent=account?account.displayName||account.email:'Guest mode';document.getElementById('sign-in').textContent=account?'Sign out':'♙  Sign in with Google';document.getElementById('firebase-note').textContent=account?'Signed in. Join the queue to find an opponent.':'Sign in to join the live queue. Puzzle mode works without an account.'});
+    document.getElementById('sign-in').addEventListener('click',async()=>{try{if(user)await signOut(auth);else await signInWithPopup(auth,new GoogleAuthProvider())}catch(error){setStatus('Sign-in failed: '+error.message,'error')}});
+
+    function joinMatch(roomId,whiteUid,blackUid){
+      if(matchUnsubscribe)matchUnsubscribe();matchId=roomId;playerColor=user.uid===whiteUid?'w':'b';online=true;
+      document.getElementById('puzzle-mode').classList.remove('active');document.getElementById('online-mode').classList.add('active');document.getElementById('puzzle-number').textContent='LIVE';document.getElementById('puzzle-title').textContent='Live 1v1 match';document.getElementById('puzzle-description').textContent='You are playing '+(playerColor==='w'?'White':'Black')+'. Make a move when it is your turn.';document.getElementById('white-name').textContent=playerColor==='w'?'You · White':'Opponent · White';document.getElementById('black-name').textContent=playerColor==='b'?'You · Black':'Opponent · Black';document.getElementById('opponent-label').textContent='Live opponent';document.getElementById('queue-button').textContent='Leave 1v1 match';
+      const path=ref(db,'matches/'+roomId);matchRef=path;
+      runTransaction(path,current=>current||{whiteUid,blackUid,fen:new Chess().fen(),history:[],turnUid:whiteUid,status:'playing',createdAt:Date.now()},{applyLocally:false}).then(()=>{
+        matchUnsubscribe=onValue(path,snap=>{const data=snap.val();if(!data)return;game=new Chess(data.fen);liveHistory=data.history||[];lastMove=liveHistory.length?{from:liveHistory[liveHistory.length-1].from,to:liveHistory[liveHistory.length-1].to}:null;selected=null;legalTargets=[];renderBoard();updateMoves();setStatus(data.status==='finished'?'Match complete — checkmate!':(data.turnUid===user.uid?'Your turn.':'Opponent to move.'),data.status==='finished'?'success':'');if(data.status==='finished'&&data.winnerUid===user.uid)playSuccess()});
+      }).catch(error=>setStatus('Could not open match: '+error.message,'error'));
     }
-
-    function updateMoves() {
-      const history = game.history();
-      document.getElementById('moves').textContent = history.length ? history.map((move, i) => (i % 2 ? ' ' : (Math.floor(i / 2) + 1) + '. ') + move).join('') : 'No moves yet';
-      document.getElementById('move-count').textContent = history.length + (history.length === 1 ? ' move' : ' moves');
+    async function submitOnlineMove(from,to){
+      if(!matchRef||!user)return;const before=game.fen();const move=game.move({from,to,promotion:'q'});if(!move)return;const nextFen=game.fen(),notation=move.san;game=new Chess(before);renderBoard();
+      try{await runTransaction(matchRef,current=>{if(!current||current.turnUid!==user.uid||current.status!=='playing')return;const verified=new Chess(current.fen),valid=verified.move({from,to,promotion:'q'});if(!valid)return;const history=current.history||[];history.push({from,to,san:valid.san});return{...current,fen:verified.fen(),history,turnUid:verified.game_over()?null:(verified.turn()==='w'?current.whiteUid:current.blackUid),status:verified.game_over()?'finished':'playing',winnerUid:verified.in_checkmate()?user.uid:null}} ,{applyLocally:false});}catch(error){setStatus('Move was not sent: '+error.message,'error')}
     }
-
-    function renderPuzzleList() {
-      const list = document.getElementById('puzzle-list');
-      list.innerHTML = '';
-      puzzles.forEach((puzzle, index) => {
-        const button = document.createElement('button');
-        button.className = 'puzzle-option' + (index === activePuzzle ? ' active' : '');
-        button.innerHTML = '<span><strong>' + String(index + 1).padStart(2, '0') + ' &nbsp; ' + puzzle.title + '</strong><small>Mate in 1 · White to move</small></span><span class="rating">★ ' + (index === 0 ? '800' : index === 1 ? '950' : '900') + '</span>';
-        button.addEventListener('click', () => loadPuzzle(index));
-        list.appendChild(button);
-      });
-    }
-
-    function loadPuzzle(index) {
-      activePuzzle = index;
-      game = new Chess(puzzles[index].fen);
-      selected = null; legalTargets = []; hintUsed = false; lastMove = null;
-      document.getElementById('puzzle-number').textContent = String(index + 1).padStart(2, '0');
-      document.getElementById('puzzle-title').textContent = puzzles[index].title;
-      document.getElementById('puzzle-description').textContent = puzzles[index].description;
-      document.getElementById('hint-button').textContent = '♧  Get a hint';
-      setStatus('Choose a piece, then choose its destination.');
-      renderPuzzleList(); renderBoard(); updateMoves();
-    }
-
-    document.getElementById('hint-button').addEventListener('click', () => {
-      if (game.game_over()) return;
-      setStatus(puzzles[activePuzzle].hint);
-      if (!hintUsed) {
-        hintUsed = true;
-        document.getElementById('hint-button').textContent = '♧  Hint shown';
-      }
+    document.getElementById('queue-button').addEventListener('click',async()=>{
+      if(online){if(matchUnsubscribe)matchUnsubscribe();matchUnsubscribe=null;matchRef=null;matchId=null;online=false;loadPuzzle(puzzleIndex);document.getElementById('queue-button').textContent='♟  Find a 1v1 match';setStatus('You left the match.');return}
+      if(!user){setStatus('Sign in with Google before joining the live queue.','error');return}
+      const button=document.getElementById('queue-button');button.disabled=true;button.textContent='Finding an opponent…';setStatus('Looking for an opponent in the live queue.');
+      try{
+        const lobby=ref(db,'matchmaking/current'),roomId=crypto.randomUUID();
+        const result=await runTransaction(lobby,current=>{if(current&&current.status==='waiting'&&current.uid!==user.uid)return{status:'matched',roomId,whiteUid:current.uid,blackUid:user.uid,createdAt:Date.now()};return{status:'waiting',uid:user.uid,name:user.displayName||'Player',createdAt:Date.now()};},{applyLocally:false});
+        if(!result.committed)throw new Error('Queue update was not committed');
+        if(queueUnsubscribe)queueUnsubscribe();queueUnsubscribe=onValue(lobby,snap=>{const value=snap.val();if(value?.status==='matched'&&(value.whiteUid===user.uid||value.blackUid===user.uid)){queueUnsubscribe();queueUnsubscribe=null;joinMatch(value.roomId,value.whiteUid,value.blackUid)}});
+        if(result.snapshot.val()?.status==='waiting')setStatus('You are in the queue. Keep this page open while we find an opponent.');
+      }catch(error){setStatus('Queue unavailable: '+error.message,'error');button.textContent='♟  Find a 1v1 match'}finally{button.disabled=false}
     });
-    document.getElementById('undo-button').addEventListener('click', () => {
-      if (game.history().length) {
-        game.undo(); lastMove = null; selected = null; legalTargets = [];
-        renderBoard(); updateMoves(); setStatus('Move taken back. Find the mating move.');
-        document.getElementById('hint-button').textContent = hintUsed ? '♧  Hint shown' : '♧  Get a hint';
-      }
-    });
-    document.getElementById('reset-button').addEventListener('click', () => loadPuzzle(activePuzzle));
 
-    renderPuzzleList(); renderBoard();
+    renderBoard();updateMoves();
   </script>
 </body>
 </html>
