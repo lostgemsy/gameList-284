@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#151a17" />
+  <title>Matecraft — Chess Puzzles</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --page: #151a17;
+      --panel: #202722;
+      --panel-light: #29332d;
+      --text: #f1f3ed;
+      --muted: #a9b2a9;
+      --green: #81b64c;
+      --green-dark: #547b32;
+      --light-square: #eeeed2;
+      --dark-square: #769656;
+      --gold: #e5c46a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(ellipse at 45% 0%, #29352c 0, var(--page) 60%);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button { font: inherit; }
+    .app { width: min(1120px, calc(100% - 36px)); margin: 0 auto; padding: 30px 0 46px; }
+    header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: var(--green); color: #172014; font-size: 25px; box-shadow: 0 5px 18px #81b64c35; }
+    .brand h1 { margin: 0; font-size: 19px; letter-spacing: -.4px; }
+    .brand p { margin: 3px 0 0; font-size: 12px; color: var(--muted); }
+    .header-tag { color: #c9d2c9; border: 1px solid #ffffff20; border-radius: 999px; padding: 8px 12px; font-size: 12px; }
+    main { display: grid; grid-template-columns: minmax(300px, 620px) minmax(275px, 1fr); gap: 28px; align-items: start; }
+    .board-column { min-width: 0; }
+    .board-top, .board-bottom { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 13px; padding: 0 2px 12px; }
+    .player { display: flex; align-items: center; gap: 9px; color: var(--text); font-weight: 600; }
+    .avatar { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--panel-light); font-size: 18px; }
+    .board-wrap { position: relative; width: 100%; aspect-ratio: 1; border-radius: 5px; overflow: hidden; box-shadow: 0 18px 46px #0006, 0 0 0 5px #ffffff0b; user-select: none; }
+    .board { display: grid; width: 100%; height: 100%; grid-template: repeat(8, 1fr) / repeat(8, 1fr); }
+    .square { position: relative; display: grid; place-items: center; cursor: pointer; aspect-ratio: 1; }
+    .square.light { background: var(--light-square); }
+    .square.dark { background: var(--dark-square); }
+    .square.selected { background-image: radial-gradient(#f6e7799c 0 100%); }
+    .square.last-move { box-shadow: inset 0 0 0 100px #f6e77950; }
+    .square.target::after { content: ""; width: 25%; height: 25%; border-radius: 50%; background: #23311d55; position: absolute; }
+    .square.target.capture::after { width: 86%; height: 86%; border: 6px solid #23311d70; background: transparent; }
+    .piece { z-index: 1; font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", "DejaVu Sans", sans-serif; font-size: clamp(27px, 7vw, 66px); line-height: 1; filter: drop-shadow(0 2px 1px #0004); cursor: grab; }
+    .piece.white { color: #fff; text-shadow: 0 1px 1px #333, 1px 0 1px #333, -1px 0 1px #333, 0 -1px 1px #333; }
+    .piece.black { color: #252a25; text-shadow: 0 1px 1px #fff5; }
+    .coord { position: absolute; z-index: 2; left: 4px; top: 2px; font-size: clamp(9px, 1.7vw, 12px); font-weight: 700; pointer-events: none; }
+    .light .coord { color: var(--dark-square); }
+    .dark .coord { color: var(--light-square); }
+    .board-bottom { padding: 12px 2px 0; }
+    .panel { background: linear-gradient(150deg, #242c27, #1d241f); border: 1px solid #ffffff0e; border-radius: 16px; padding: 22px; box-shadow: 0 16px 36px #0002; }
+    .eyebrow { color: var(--green); text-transform: uppercase; letter-spacing: 1.6px; font-size: 10px; font-weight: 800; }
+    .panel h2 { font-size: 23px; letter-spacing: -.6px; margin: 8px 0 8px; }
+    .description { color: var(--muted); line-height: 1.55; font-size: 14px; margin: 0 0 18px; }
+    .turn-card { display: flex; align-items: center; gap: 11px; padding: 13px; background: #11171375; border-radius: 11px; margin-bottom: 16px; }
+    .turn-icon { font-size: 25px; }
+    .turn-text strong { display: block; font-size: 13px; }
+    .turn-text span { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+    .status { min-height: 43px; display: flex; align-items: center; gap: 9px; padding: 10px 12px; border-radius: 9px; background: #ffffff08; color: #d5ddd4; font-size: 13px; line-height: 1.4; margin-bottom: 14px; }
+    .status .dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: var(--green); }
+    .status.success { color: #d8f0c8; background: #81b64c19; }
+    .status.success .dot { background: #91cf60; }
+    .status.error .dot { background: #e6a35f; }
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .btn { border: 0; border-radius: 9px; min-height: 42px; padding: 0 13px; color: var(--text); background: var(--panel-light); font-weight: 650; font-size: 13px; cursor: pointer; transition: .15s ease; }
+    .btn:hover { filter: brightness(1.13); transform: translateY(-1px); }
+    .btn.primary { grid-column: 1 / -1; background: var(--green); color: #172014; }
+    .btn.subtle { color: #c7d0c7; }
+    .divider { height: 1px; background: #ffffff12; margin: 21px 0 17px; }
+    .section-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 12px; font-weight: 750; }
+    .section-title span:last-child { color: var(--muted); font-weight: 500; }
+    .puzzle-list { display: grid; gap: 7px; }
+    .puzzle-option { width: 100%; border: 1px solid transparent; border-radius: 9px; background: #ffffff06; padding: 11px 12px; display: flex; align-items: center; justify-content: space-between; text-align: left; color: var(--text); cursor: pointer; }
+    .puzzle-option:hover { background: #ffffff0c; }
+    .puzzle-option.active { background: #81b64c17; border-color: #81b64c66; }
+    .puzzle-option strong { display: block; font-size: 12px; }
+    .puzzle-option small { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
+    .puzzle-option .rating { color: var(--gold); font-size: 11px; }
+    .moves { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; min-height: 17px; overflow-wrap: anywhere; }
+    footer { text-align: center; color: #879188; font-size: 11px; margin-top: 23px; }
+    @media (max-width: 760px) {
+      .app { width: min(620px, calc(100% - 24px)); padding-top: 18px; }
+      header { margin-bottom: 18px; }
+      main { grid-template-columns: 1fr; gap: 20px; }
+      .panel { padding: 19px; }
+      .header-tag { font-size: 10px; padding: 7px 9px; }
+      .piece { font-size: clamp(30px, 11vw, 62px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">♞</div>
+        <div><h1>Matecraft</h1><p>Sharpen your checkmate vision</p></div>
+      </div>
+      <div class="header-tag">♟ &nbsp; CHECKMATE TRAINING</div>
+    </header>
+
+    <main>
+      <section class="board-column" aria-label="Chessboard">
+        <div class="board-top">
+          <div class="player"><span class="avatar">♚</span><span>Black</span></div>
+          <span>Opponent</span>
+        </div>
+        <div class="board-wrap"><div class="board" id="board" role="grid" aria-label="Chess board"></div></div>
+        <div class="board-bottom">
+          <div class="player"><span class="avatar">♔</span><span>You</span></div>
+          <span>White to move</span>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <div class="eyebrow">Puzzle <span id="puzzle-number">01</span> &nbsp;·&nbsp; Mate in 1</div>
+        <h2 id="puzzle-title">A royal finish</h2>
+        <p class="description" id="puzzle-description">Find the forcing move. Your queen and king can work together to seal every escape square.</p>
+        <div class="turn-card">
+          <span class="turn-icon">♔</span>
+          <div class="turn-text"><strong>White to move</strong><span>Deliver checkmate in one move</span></div>
+        </div>
+        <div class="status" id="status" aria-live="polite"><span class="dot"></span><span id="status-text">Choose a piece, then choose its destination.</span></div>
+        <div class="actions">
+          <button class="btn primary" id="hint-button">♧ &nbsp; Get a hint</button>
+          <button class="btn subtle" id="undo-button">↶ &nbsp; Undo</button>
+          <button class="btn subtle" id="reset-button">⟳ &nbsp; Reset</button>
+        </div>
+        <div class="divider"></div>
+        <div class="section-title"><span>YOUR MOVES</span><span id="move-count">0 moves</span></div>
+        <div class="moves" id="moves">No moves yet</div>
+        <div class="divider"></div>
+        <div class="section-title"><span>PUZZLE SET</span><span>3 puzzles</span></div>
+        <div class="puzzle-list" id="puzzle-list"></div>
+      </aside>
+    </main>
+    <footer>Take your time. Look for checks, captures, and your opponent’s escape squares.</footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chess.js@0.10.3/chess.min.js"></script>
+  <script>
+    const puzzles = [
+      {
+        title: 'A royal finish',
+        description: 'Find the forcing move. Your queen and king can work together to seal every escape square.',
+        fen: '7k/8/6K1/6Q1/8/8/8/8 w - - 0 1',
+        from: 'g5', to: 'g7', hint: 'Move the queen next to the enemy king, protected by your own king.'
+      },
+      {
+        title: 'The corner trap',
+        description: 'The black king is boxed in near the corner. Find the queen move that takes away every flight square.',
+        fen: 'k7/8/1QK5/8/8/8/8/8 w - - 0 1',
+        from: 'b6', to: 'b7', hint: 'Place your queen one square closer to the corner king. Your king protects the queen.'
+      },
+      {
+        title: 'King and queen teamwork',
+        description: 'A familiar mating pattern, but from the other side of the board. Coordinate your king and queen.',
+        fen: '8/8/8/8/8/6Q1/5K2/7k w - - 0 1',
+        from: 'g3', to: 'g2', hint: 'The queen can deliver check from a square protected by your king.'
+      }
+    ];
+    const symbols = { wk: '♔', wq: '♕', wr: '♖', wb: '♗', wn: '♘', wp: '♙', bk: '♚', bq: '♛', br: '♜', bb: '♝', bn: '♞', bp: '♟' };
+    let game = new Chess(puzzles[0].fen);
+    let activePuzzle = 0;
+    let selected = null;
+    let legalTargets = [];
+    let hintUsed = false;
+    let lastMove = null;
+
+    const boardElement = document.getElementById('board');
+    const statusBox = document.getElementById('status');
+    const statusText = document.getElementById('status-text');
+
+    function setStatus(message, type = '') {
+      statusText.textContent = message;
+      statusBox.className = 'status' + (type ? ' ' + type : '');
+    }
+
+    function renderBoard() {
+      boardElement.innerHTML = '';
+      const position = game.board();
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const squareName = 'abcdefgh'[col] + (8 - row);
+          const piece = position[row][col];
+          const square = document.createElement('div');
+          square.className = 'square ' + ((row + col) % 2 ? 'dark' : 'light');
+          square.setAttribute('role', 'gridcell');
+          square.setAttribute('aria-label', squareName + (piece ? ' ' + piece.color + ' ' + piece.type : ''));
+          if (selected === squareName) square.classList.add('selected');
+          if (lastMove && (lastMove.from === squareName || lastMove.to === squareName)) square.classList.add('last-move');
+          if (legalTargets.includes(squareName)) {
+            square.classList.add('target');
+            if (piece) square.classList.add('capture');
+          }
+          if (col === 0) {
+            const rank = document.createElement('span');
+            rank.className = 'coord'; rank.textContent = 8 - row; square.appendChild(rank);
+          }
+          if (row === 7) {
+            const file = document.createElement('span');
+            file.className = 'coord'; file.style.left = 'auto'; file.style.right = '4px'; file.style.top = 'auto'; file.style.bottom = '2px'; file.textContent = 'abcdefgh'[col]; square.appendChild(file);
+          }
+          if (piece) {
+            const pieceElement = document.createElement('span');
+            pieceElement.className = 'piece ' + (piece.color === 'w' ? 'white' : 'black');
+            pieceElement.textContent = symbols[piece.color + piece.type];
+            square.appendChild(pieceElement);
+          }
+          square.addEventListener('click', () => handleSquareClick(squareName));
+          boardElement.appendChild(square);
+        }
+      }
+    }
+
+    function handleSquareClick(square) {
+      if (game.game_over()) return;
+      const piece = game.get(square);
+      if (selected && legalTargets.includes(square)) {
+        const move = game.move({ from: selected, to: square, promotion: 'q' });
+        if (move) {
+          lastMove = { from: move.from, to: move.to };
+          selected = null; legalTargets = [];
+          renderBoard(); updateMoves();
+          checkPuzzleMove(move);
+          return;
+        }
+      }
+      if (piece && piece.color === 'w') {
+        selected = square;
+        legalTargets = game.moves({ square, verbose: true }).map(move => move.to);
+      } else {
+        selected = null; legalTargets = [];
+      }
+      renderBoard();
+    }
+
+    function checkPuzzleMove(move) {
+      const puzzle = puzzles[activePuzzle];
+      if (move.from === puzzle.from && move.to === puzzle.to && game.in_checkmate()) {
+        setStatus('Brilliant! Checkmate — puzzle solved.', 'success');
+        document.getElementById('hint-button').textContent = '✓  Puzzle solved';
+      } else if (game.in_checkmate()) {
+        setStatus('That is checkmate, but it is not the puzzle’s intended solution. Reset to try again.', 'error');
+      } else {
+        setStatus('Not quite — look for a move that leaves the king no escape.', 'error');
+      }
+    }
+
+    function updateMoves() {
+      const history = game.history();
+      document.getElementById('moves').textContent = history.length ? history.map((move, i) => (i % 2 ? ' ' : (Math.floor(i / 2) + 1) + '. ') + move).join('') : 'No moves yet';
+      document.getElementById('move-count').textContent = history.length + (history.length === 1 ? ' move' : ' moves');
+    }
+
+    function renderPuzzleList() {
+      const list = document.getElementById('puzzle-list');
+      list.innerHTML = '';
+      puzzles.forEach((puzzle, index) => {
+        const button = document.createElement('button');
+        button.className = 'puzzle-option' + (index === activePuzzle ? ' active' : '');
+        button.innerHTML = '<span><strong>' + String(index + 1).padStart(2, '0') + ' &nbsp; ' + puzzle.title + '</strong><small>Mate in 1 · White to move</small></span><span class="rating">★ ' + (index === 0 ? '800' : index === 1 ? '950' : '900') + '</span>';
+        button.addEventListener('click', () => loadPuzzle(index));
+        list.appendChild(button);
+      });
+    }
+
+    function loadPuzzle(index) {
+      activePuzzle = index;
+      game = new Chess(puzzles[index].fen);
+      selected = null; legalTargets = []; hintUsed = false; lastMove = null;
+      document.getElementById('puzzle-number').textContent = String(index + 1).padStart(2, '0');
+      document.getElementById('puzzle-title').textContent = puzzles[index].title;
+      document.getElementById('puzzle-description').textContent = puzzles[index].description;
+      document.getElementById('hint-button').textContent = '♧  Get a hint';
+      setStatus('Choose a piece, then choose its destination.');
+      renderPuzzleList(); renderBoard(); updateMoves();
+    }
+
+    document.getElementById('hint-button').addEventListener('click', () => {
+      if (game.game_over()) return;
+      setStatus(puzzles[activePuzzle].hint);
+      if (!hintUsed) {
+        hintUsed = true;
+        document.getElementById('hint-button').textContent = '♧  Hint shown';
+      }
+    });
+    document.getElementById('undo-button').addEventListener('click', () => {
+      if (game.history().length) {
+        game.undo(); lastMove = null; selected = null; legalTargets = [];
+        renderBoard(); updateMoves(); setStatus('Move taken back. Find the mating move.');
+        document.getElementById('hint-button').textContent = hintUsed ? '♧  Hint shown' : '♧  Get a hint';
+      }
+    });
+    document.getElementById('reset-button').addEventListener('click', () => loadPuzzle(activePuzzle));
+
+    renderPuzzleList(); renderBoard();
+  </script>
+</body>
+</html>
